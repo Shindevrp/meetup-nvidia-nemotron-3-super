@@ -1,3 +1,6 @@
+# Data models for scheme documents loaded from JSON files
+# Provides typed dataclasses and loader utilities
+
 import json
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -28,6 +31,7 @@ class Scheme:
 
 
 def load_scheme(filepath: str) -> Scheme:
+    """Load a single scheme from a JSON file and return a typed Scheme object."""
     with open(filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
     faqs = [FAQ(**faq) for faq in data.get("faq", [])]
@@ -36,6 +40,7 @@ def load_scheme(filepath: str) -> Scheme:
 
 
 def load_all_schemes(schemes_dir: str) -> List[Scheme]:
+    """Load all scheme JSON files from a directory."""
     import os, glob
     schemes = []
     for fp in glob.glob(os.path.join(schemes_dir, "*.json")):

@@ -1,7 +1,12 @@
+# FastAPI server for Community Benefits Navigator
+# Serves frontend static files and exposes REST APIs for chat, eligibility, and scheme data
+# Uses Nemotron-3-Super via OpenRouter for grounded RAG-powered responses
+
 import os
 import sys
 from contextlib import asynccontextmanager
 
+# Ensure backend/ is on sys.path so subpackages are importable
 sys.path.insert(0, os.path.dirname(__file__))
 
 from fastapi import FastAPI, HTTPException
@@ -18,12 +23,13 @@ from models.chat import (
 )
 from rag.loader import load_and_index
 
-
+# Flag file to track whether ChromaDB has been indexed (avoids re-indexing on every restart)
 INDEXED_FLAG = os.path.join(os.path.dirname(__file__), ".indexed")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Run once at startup: index scheme documents into ChromaDB if not already done
     if not os.path.exists(INDEXED_FLAG):
         load_and_index()
         with open(INDEXED_FLAG, "w") as f:
@@ -33,11 +39,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Community Benefits Navigator",
-    description="AI-powered assistant for Indian government welfare schemes",
+    description="AI-powered assistant for Indian government welfare schemes using Nemotron-3-Super",
     version="1.0.0",
     lifespan=lifespan,
 )
 
+# Allow all origins for demo purposes (restrict in production)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -46,6 +53,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# --- Request/Response Models ---
 
 class ChatRequest(BaseModel):
     message: str
@@ -77,6 +86,8 @@ class EligibilityResult(BaseModel):
     match: bool
     reasons: List[str]
 
+
+# --- API Endpoints ---
 
 @app.get("/api/health")
 async def health():
@@ -111,6 +122,7 @@ async def eligibility(profile: EligibilityProfile):
     return check_eligibility(profile.model_dump())
 
 
+# Serve frontend static files (HTML/CSS/JS) at the root
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
 if os.path.isdir(FRONTEND_DIR):
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

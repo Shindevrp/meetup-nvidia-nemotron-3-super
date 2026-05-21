@@ -1,3 +1,6 @@
+# Embedding pipeline: chunks scheme JSON documents, embeds them with E5,
+# and stores in ChromaDB for semantic retrieval
+
 import json
 import os
 
@@ -12,10 +15,12 @@ EMBED_MODEL = "intfloat/multilingual-e5-small"
 
 
 def get_embedding_model():
+    """Load the multilingual E5 embedding model from HuggingFace."""
     return SentenceTransformer(EMBED_MODEL)
 
 
 def get_chroma_collection():
+    """Get or create the persistent ChromaDB collection for scheme documents."""
     client = chromadb.PersistentClient(
         path=CHROMA_DIR,
         settings=Settings(anonymized_telemetry=False),
@@ -24,6 +29,9 @@ def get_chroma_collection():
 
 
 def chunk_scheme_data(schemes_dir: str):
+    """Read all scheme JSON files and split each into granular chunks
+    (summary, benefits, eligibility rules, process steps, FAQs)
+    with associated metadata for source tracking."""
     chunks = []
     metadatas = []
     ids = []
@@ -72,6 +80,8 @@ def chunk_scheme_data(schemes_dir: str):
 
 
 def embed_and_store():
+    """Generate embeddings for all scheme chunks and store them in ChromaDB.
+    Idempotent: skips if collection already has data."""
     model = get_embedding_model()
     collection = get_chroma_collection()
 

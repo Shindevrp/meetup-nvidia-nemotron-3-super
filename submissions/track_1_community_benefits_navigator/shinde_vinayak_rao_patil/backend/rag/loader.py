@@ -1,3 +1,5 @@
+# Loader: entry point for indexing scheme documents into ChromaDB at startup
+
 import json
 import os
 

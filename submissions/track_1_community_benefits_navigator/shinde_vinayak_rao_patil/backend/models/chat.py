@@ -1,3 +1,6 @@
+# Chat orchestration: integrates RAG retrieval with Nemotron-3-Super (via OpenRouter)
+# Also handles scheme data access and eligibility checking logic
+
 import os
 import json
 from typing import List, Optional
@@ -9,6 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from rag.retriever import retrieve, format_context
 from models.schemes import load_all_schemes
 
+# OpenRouter API configuration (set via .env or environment variables)
 API_URL = os.getenv("API_URL", "https://openrouter.ai/api/v1")
 API_KEY = os.getenv("API_KEY", "")
 MODEL_NAME = os.getenv("MODEL_NAME", "nvidia/nemotron-3-super-120b-a12b:free")
@@ -18,11 +22,13 @@ SCHEMES_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "schemes")
 
 
 def get_available_schemes() -> dict:
+    """Return a lightweight list of all schemes (id, name, summary) for the frontend browser."""
     schemes = load_all_schemes(SCHEMES_DIR)
     return {s.id: {"name": s.name, "name_hi": s.name_hi, "summary": s.summary, "summary_hi": s.summary_hi} for s in schemes}
 
 
 def get_scheme_detail(scheme_id: str) -> Optional[dict]:
+    """Return full detail for a single scheme by ID."""
     schemes = load_all_schemes(SCHEMES_DIR)
     for s in schemes:
         if s.id == scheme_id:
@@ -44,6 +50,8 @@ def get_scheme_detail(scheme_id: str) -> Optional[dict]:
 
 
 def check_eligibility(profile: dict) -> List[dict]:
+    """Rule-based eligibility checker. Matches user profile against each scheme's criteria.
+    Returns a ranked list with confidence scores and reasons for potential disqualification."""
     schemes = load_all_schemes(SCHEMES_DIR)
     results = []
     for s in schemes:
@@ -128,14 +136,18 @@ async def chat_with_nemotron(
     language: str = "english",
     history: List[dict] = None,
 ) -> dict:
+    """Main chat handler: retrieves relevant scheme context via RAG, then sends
+    a grounded prompt to Nemotron-3-Super via OpenRouter API. Returns reply with citations."""
     if history is None:
         history = []
 
+    # Step 1: Retrieve relevant chunks from ChromaDB
     retrieved = retrieve(message)
     context = format_context(retrieved)
 
     lang_instruction = "Respond in English." if language == "english" else f"Respond in Hindi (हिंदी)."
 
+    # Step 2: Build a grounded prompt with strict rules for accuracy and safety
     system_prompt = f"""You are a Community Benefits Navigator for Indian government schemes.
 
 {lang_instruction}
@@ -153,7 +165,7 @@ CONTEXT:
 """
 
     messages = [{"role": "system", "content": system_prompt}]
-    for h in history[-6:]:  # keep last 6 messages for context window
+    for h in history[-6:]:
         messages.append({"role": h["role"], "content": h["content"]})
     messages.append({"role": "user", "content": message})
 
@@ -164,6 +176,7 @@ CONTEXT:
             "confidence": 0.0,
         }
 
+    # Step 3: Call OpenRouter API (OpenAI-compatible)
     async with httpx.AsyncClient(timeout=60.0) as client:
         resp = await client.post(
             f"{API_URL}/chat/completions",
@@ -185,6 +198,7 @@ CONTEXT:
         data = resp.json()
         reply = data["choices"][0]["message"]["content"]
 
+    # Step 4: Build citations from retrieved chunks with confidence scores
     citations = []
     for doc, meta, score in retrieved:
         if score > 0.3:
