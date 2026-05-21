@@ -4,8 +4,10 @@ from typing import List, Optional
 
 import httpx
 
-from ..rag.retriever import retrieve, format_context
-from ..models.schemes import load_all_schemes
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from rag.retriever import retrieve, format_context
+from models.schemes import load_all_schemes
 
 API_URL = os.getenv("API_URL", "https://openrouter.ai/api/v1")
 API_KEY = os.getenv("API_KEY", "")

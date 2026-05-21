@@ -78,7 +78,12 @@ def embed_and_store():
     chunks, metadatas, ids = chunk_scheme_data(SCHEMES_DIR)
     embeddings = model.encode(chunks, normalize_embeddings=True).tolist()
 
-    collection.delete(where={})
+    count = collection.count()
+    if count > 0:
+        print(f"  Collection already has {count} chunks — skipping indexing.")
+        print("  Delete chroma_db/ directory to re-index.")
+        return collection
+
     collection.add(
         embeddings=embeddings,
         documents=chunks,

@@ -2,7 +2,9 @@ from typing import List, Tuple
 
 from sentence_transformers import SentenceTransformer
 
-from .embedder import get_chroma_collection, get_embedding_model
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from rag.embedder import get_chroma_collection, get_embedding_model
 
 TOP_K = 5
 
