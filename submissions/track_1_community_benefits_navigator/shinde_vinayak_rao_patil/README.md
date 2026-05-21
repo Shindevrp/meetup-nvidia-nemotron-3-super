@@ -54,7 +54,7 @@ The Community Benefits Navigator helps Indian citizens discover, understand, and
 |---|---|
 | Frontend | HTML, CSS, Vanilla JavaScript |
 | Backend | Python, FastAPI |
-| LLM | NVIDIA Nemotron-3-Super (NVIDIA NIM API) |
+| LLM | NVIDIA Nemotron-3-Super via [OpenRouter](https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free) (free tier) |
 | Vector DB | ChromaDB |
 | Embeddings | `intfloat/multilingual-e5-small` (Hugging Face) |
 | PDF/Reporting | html2pdf.js (client-side) |
@@ -65,7 +65,7 @@ The Community Benefits Navigator helps Indian citizens discover, understand, and
 
 **Prerequisites:**
 - Python 3.10+
-- NVIDIA NIM API key (get one at [build.nvidia.com](https://build.nvidia.com))
+- OpenRouter API key (free tier) — get one at [openrouter.ai/keys](https://openrouter.ai/keys)
 - 4GB+ RAM for ChromaDB + Sentence Transformers
 
 **Setup:**
@@ -83,7 +83,7 @@ pip install -r backend/requirements.txt
 
 # 4. Configure API key
 cp backend/.env.example backend/.env
-# Edit backend/.env and add your NIM_API_KEY
+# Edit backend/.env and add your OpenRouter API key (API_KEY=sk-or-v1-...)
 
 # 5. Run the server
 cd backend
@@ -93,6 +93,8 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 **Open:** `http://localhost:8000` in your browser.
 
 The first run will index scheme documents into ChromaDB (takes ~30 seconds).
+
+**Note:** The free OpenRouter model (`nvidia/nemotron-3-super-120b-a12b:free`) is rate-limited (~20 RPM). This is sufficient for demo and testing. For production, switch to a paid tier or use NVIDIA NIM directly.
 
 ---
 

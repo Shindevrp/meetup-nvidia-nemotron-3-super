@@ -7,9 +7,11 @@ import httpx
 from ..rag.retriever import retrieve, format_context
 from ..models.schemes import load_all_schemes
 
-NIM_API_URL = os.getenv("NIM_API_URL", "https://integrate.api.nvidia.com/v1")
-NIM_API_KEY = os.getenv("NIM_API_KEY", "")
-MODEL_NAME = os.getenv("NIM_MODEL", "nvidia/nemotron-3-super-120b-a12b")
+API_URL = os.getenv("API_URL", "https://openrouter.ai/api/v1")
+API_KEY = os.getenv("API_KEY", "")
+MODEL_NAME = os.getenv("MODEL_NAME", "nvidia/nemotron-3-super-120b-a12b:free")
+APP_URL = os.getenv("APP_URL", "https://github.com/shindevrp/meetup-nvidia-nemotron-3-super")
+APP_TITLE = os.getenv("APP_TITLE", "Community Benefits Navigator")
 SCHEMES_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "schemes")
 
 
@@ -153,19 +155,21 @@ CONTEXT:
         messages.append({"role": h["role"], "content": h["content"]})
     messages.append({"role": "user", "content": message})
 
-    if not NIM_API_KEY:
+    if not API_KEY:
         return {
-            "reply": "NVIDIA NIM API key not configured. Set NIM_API_KEY environment variable.",
+            "reply": "API key not configured. Set API_KEY in backend/.env (get one from https://openrouter.ai/keys)",
             "citations": [],
             "confidence": 0.0,
         }
 
     async with httpx.AsyncClient(timeout=60.0) as client:
         resp = await client.post(
-            f"{NIM_API_URL}/chat/completions",
+            f"{API_URL}/chat/completions",
             headers={
-                "Authorization": f"Bearer {NIM_API_KEY}",
+                "Authorization": f"Bearer {API_KEY}",
                 "Content-Type": "application/json",
+                "HTTP-Referer": APP_URL,
+                "X-Title": APP_TITLE,
             },
             json={
                 "model": MODEL_NAME,
