@@ -1,0 +1,73 @@
+{
+  "id": "ujjwala",
+  "name": "Pradhan Mantri Ujjwala Yojana (PMUY)",
+  "name_hi": "प्रधानमंत्री उज्ज्वला योजना (पीएमयूवाई)",
+  "ministry": "Ministry of Petroleum and Natural Gas",
+  "type": "Subsidy for LPG Connection",
+  "summary": "Provides free LPG (cooking gas) connections to women from Below Poverty Line (BPL) families to replace traditional cooking fuels like firewood, coal, and dung cakes.",
+  "summary_hi": "गरीबी रेखा से नीचे (बीपीएल) परिवारों की महिलाओं को पारंपरिक खाना पकाने के ईंधन (लकड़ी, कोयला, गोबर के उपले) के स्थान पर मुफ्त एलपीजी (रसोई गैस) कनेक्शन प्रदान करती है।",
+  "benefits": [
+    "Free LPG connection to eligible BPL households",
+    "First LPG cylinder and stove (hotplate) provided free of cost",
+    "No registration or installation fee",
+    "Subsequent refills available at market price with option for PAHAL subsidy",
+    "Reduces health hazards from indoor air pollution caused by traditional cooking methods",
+    "Empowers women by saving time spent collecting firewood"
+  ],
+  "eligibility": {
+    "who_can_apply": [
+      "Adult woman (above 18 years) from a BPL household",
+      "Household not already having an LPG connection",
+      "Woman must be a voter in the same state where connection is sought",
+      "Ration card holder under NFSA (National Food Security Act)"
+    ],
+    "who_cannot_apply": [
+      "Households already having an LPG connection",
+      "Households above the poverty line",
+      "Applicants below 18 years of age"
+    ],
+    "documents_required": [
+      "Aadhaar card of the applicant woman",
+      "BPL ration card / SECC certificate",
+      "Voter ID / EPIC card",
+      "Passport-size photographs",
+      "Bank account details (optional, for subsidy transfer)"
+    ]
+  },
+  "application_process": {
+    "how_to_apply": [
+      "Visit the nearest HPCL/IOCL/BPCL LPG distributor (gas agency)",
+      "Fill the PMUY application form",
+      "Submit Aadhaar, BPL card, and voter ID",
+      "The distributor verifies eligibility through the PMUY portal (https://pmuy.gov.in)",
+      "After verification, the connection is issued within 7-10 working days",
+      "First cylinder and stove are delivered to your home"
+    ],
+    "portal_url": "https://pmuy.gov.in",
+    "helpline": "1800-233-3555"
+  },
+  "faq": [
+    {
+      "q": "I have an old LPG connection — can I still apply?",
+      "a": "No. PMUY is only for households that do not already have an LPG connection."
+    },
+    {
+      "q": "Do I get free gas refills forever?",
+      "a": "Only the first cylinder is free. After that, you pay market price. If eligible, you can get PAHAL subsidy for up to 12 cylinders per year."
+    },
+    {
+      "q": "Can a male member apply on behalf of a woman?",
+      "a": "The connection is issued in the name of the adult woman of the household. She must apply in person or through proper authorization."
+    },
+    {
+      "q": "What if I lost my connection documents?",
+      "a": "Visit your LPG distributor with your Aadhaar card. They can look up the connection in the system and issue duplicate documents."
+    }
+  ],
+  "official_sources": [
+    "https://pmuy.gov.in",
+    "https://www.mopng.gov.in"
+  ],
+  "last_updated": "2026-05-20",
+  "tags": ["lpg", "cooking-gas", "women", "bpl", "health"]
+}

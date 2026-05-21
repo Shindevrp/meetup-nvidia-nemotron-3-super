@@ -1,0 +1,74 @@
+{
+  "id": "nsp_scholarships",
+  "name": "National Scholarship Portal (NSP) - Central Sector Scheme Scholarships",
+  "name_hi": "राष्ट्रीय छात्रवृत्ति पोर्टल (एनएसपी) - केंद्रीय क्षेत्र योजना छात्रवृत्तियां",
+  "ministry": "Ministry of Education",
+  "type": "Scholarship",
+  "summary": "A one-stop platform offering multiple central government scholarships for students from economically weaker sections, SC/ST/OBC, and minority communities from pre-matric to PhD level.",
+  "summary_hi": "आर्थिक रूप से कमजोर वर्गों, एससी/एसटी/ओबीसी और अल्पसंख्यक समुदायों के छात्रों के लिए प्री-मैट्रिक से पीएचडी स्तर तक कई केंद्रीय सरकारी छात्रवृत्तियां प्रदान करने वाला एकल मंच।",
+  "benefits": [
+    "Tuition fee coverage for selected schemes",
+    "Maintenance allowance for hostel/day scholars",
+    "Renewable annually based on academic performance",
+    "Direct transfer to student's bank account (DBT)"
+  ],
+  "eligibility": {
+    "who_can_apply": [
+      "Indian citizens with valid Aadhaar",
+      "Students enrolled in recognized institutions",
+      "Income criteria vary by scheme (typically ₹1-8 lakh/year family income)",
+      "Specific caste/community eligibility per scheme (SC/ST/OBC/Minority/EWS)"
+    ],
+    "who_cannot_apply": [
+      "Students already receiving another central government scholarship for the same course",
+      "Students with less than 50% attendance (for renewal)",
+      "Students failing to meet minimum academic percentage criteria"
+    ],
+    "documents_required": [
+      "Aadhaar card",
+      "Bank account (linked to Aadhaar)",
+      "Income certificate of parents",
+      "Caste certificate (if applicable)",
+      "Previous year marksheet",
+      "Fee receipt / bonafide certificate from institution"
+    ]
+  },
+  "application_process": {
+    "how_to_apply": [
+      "Visit https://scholarships.gov.in",
+      "Click 'New Registration' and create an account",
+      "Log in and fill the Common Application Form (CAF)",
+      "Select the scholarship scheme you are eligible for",
+      "Upload scanned copies of required documents",
+      "Submit application online",
+      "Track application status using the application ID"
+    ],
+    "portal_url": "https://scholarships.gov.in",
+    "helpline": "0120-6619540",
+    "application_period": "Typically July-October each year (varies by scheme)"
+  },
+  "faq": [
+    {
+      "q": "Can I apply for multiple scholarships?",
+      "a": "You can apply for multiple schemes through NSP, but you will receive only one scholarship for a particular course."
+    },
+    {
+      "q": "What if my application is rejected?",
+      "a": "Check the rejection reason on the portal. Common reasons: invalid documents, income mismatch, or institution not verified. Correct and reapply."
+    },
+    {
+      "q": "Is there an application fee?",
+      "a": "No. NSP is a free platform. Do not pay anyone to apply."
+    },
+    {
+      "q": "How will I receive the scholarship amount?",
+      "a": "Directly to your Aadhaar-linked bank account through DBT (Direct Benefit Transfer)."
+    }
+  ],
+  "official_sources": [
+    "https://scholarships.gov.in",
+    "https://www.education.gov.in"
+  ],
+  "last_updated": "2026-05-20",
+  "tags": ["education", "scholarship", "students", "sc-st", "obc", "minority"]
+}

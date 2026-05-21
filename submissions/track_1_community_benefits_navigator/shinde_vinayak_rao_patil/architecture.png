@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" font-family="Segoe UI, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1000" y2="700" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f0f4ff"/>
+      <stop offset="100%" stop-color="#e8f0fe"/>
+    </linearGradient>
+    <linearGradient id="user" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a73e8"/>
+      <stop offset="100%" stop-color="#1557b0"/>
+    </linearGradient>
+    <linearGradient id="nim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#76b900"/>
+      <stop offset="100%" stop-color="#5c9400"/>
+    </linearGradient>
+    <linearGradient id="data" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ea4335"/>
+      <stop offset="100%" stop-color="#c5221f"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f6368"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a73e8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="700" fill="url(#bg)" rx="16"/>
+
+  <!-- Title -->
+  <text x="500" y="40" text-anchor="middle" font-size="20" font-weight="700" fill="#202124">Community Benefits Navigator — Architecture</text>
+
+  <!-- === LAYER 1: USER === -->
+  <rect x="60" y="70" width="200" height="160" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="60" y="70" width="200" height="36" rx="12" fill="url(#user)"/>
+  <text x="160" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="white">👤 User Layer</text>
+  <text x="160" y="125" text-anchor="middle" font-size="11" fill="#444">Web Browser</text>
+  <text x="160" y="145" text-anchor="middle" font-size="11" fill="#444">HTML/CSS/JS Frontend</text>
+  <text x="160" y="165" text-anchor="middle" font-size="11" fill="#444">Mobile-responsive UI</text>
+  <text x="160" y="185" text-anchor="middle" font-size="11" fill="#444">English / Hindi Toggle</text>
+  <text x="160" y="205" text-anchor="middle" font-size="10" fill="#666">(Chat + Eligibility + Browse)</text>
+
+  <!-- Arrow U->B -->
+  <line x1="260" y1="140" x2="340" y2="140" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="290" y="133" text-anchor="middle" font-size="9" fill="#1a73e8">HTTP</text>
+
+  <!-- === LAYER 2: BACKEND === -->
+  <rect x="350" y="70" width="240" height="160" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="350" y="70" width="240" height="36" rx="12" fill="#1a73e8"/>
+  <text x="470" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="white">⚡ Backend Layer</text>
+  <text x="470" y="125" text-anchor="middle" font-size="11" fill="#444">FastAPI (Python)</text>
+  <text x="470" y="145" text-anchor="middle" font-size="11" fill="#444">POST /api/chat</text>
+  <text x="470" y="165" text-anchor="middle" font-size="11" fill="#444">POST /api/eligibility</text>
+  <text x="470" y="185" text-anchor="middle" font-size="11" fill="#444">GET /api/schemes</text>
+  <text x="470" y="205" text-anchor="middle" font-size="11" fill="#444">Prompt Engineering</text>
+
+  <!-- Arrow B->RAG -->
+  <line x1="470" y1="230" x2="470" y2="290" stroke="#5f6368" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="480" y="265" font-size="9" fill="#5f6368">Context query</text>
+
+  <!-- === LAYER 3: RAG === -->
+  <rect x="60" y="300" width="310" height="160" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="60" y="300" width="310" height="36" rx="12" fill="#34a853"/>
+  <text x="215" y="323" text-anchor="middle" font-size="13" font-weight="600" fill="white">🔍 RAG Pipeline</text>
+  <text x="215" y="355" text-anchor="middle" font-size="11" fill="#444">ChromaDB Vector Store</text>
+  <text x="215" y="375" text-anchor="middle" font-size="11" fill="#444">Semantic Search (E5 Embeddings)</text>
+  <text x="215" y="395" text-anchor="middle" font-size="11" fill="#444">Retrieves Top-5 Relevant Chunks</text>
+  <text x="215" y="415" text-anchor="middle" font-size="11" fill="#444">Formats Context with Citations</text>
+  <text x="215" y="440" text-anchor="middle" font-size="10" fill="#666">(scheme summaries, benefits, eligibility, process, FAQs)</text>
+
+  <!-- Arrow RAG->NIM -->
+  <line x1="370" y1="370" x2="490" y2="370" stroke="#5f6368" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="410" y="363" font-size="9" fill="#5f6368">Context + Query</text>
+
+  <!-- === LAYER 4: NIM / LLM === -->
+  <rect x="500" y="300" width="250" height="160" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="500" y="300" width="250" height="36" rx="12" fill="url(#nim)"/>
+  <text x="625" y="323" text-anchor="middle" font-size="13" font-weight="600" fill="white">🧠 LLM Layer</text>
+  <text x="625" y="355" text-anchor="middle" font-size="11" fill="#444">NVIDIA NIM API</text>
+  <text x="625" y="375" text-anchor="middle" font-size="11" fill="#444">Nemotron-3-Super</text>
+  <text x="625" y="395" text-anchor="middle" font-size="11" fill="#444">120B / 12B Active MoE</text>
+  <text x="625" y="415" text-anchor="middle" font-size="11" fill="#444">Grounded Generation</text>
+  <text x="625" y="440" text-anchor="middle" font-size="10" fill="#666">(with citations + confidence)</text>
+
+  <!-- Arrow NIM -> B -->
+  <path d="M 625 460 L 625 490 L 470 490 L 470 460" fill="none" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="555" y="486" font-size="9" fill="#1a73e8">Response</text>
+
+  <!-- === LAYER 5: DATA === -->
+  <rect x="60" y="510" width="310" height="140" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="60" y="510" width="310" height="36" rx="12" fill="url(#data)"/>
+  <text x="215" y="533" text-anchor="middle" font-size="13" font-weight="600" fill="white">📦 Data Layer</text>
+  <text x="215" y="565" text-anchor="middle" font-size="11" fill="#444">5 Central Govt Schemes (JSON)</text>
+  <text x="215" y="585" text-anchor="middle" font-size="11" fill="#444">PM-KISAN | Ayushman Bharat</text>
+  <text x="215" y="605" text-anchor="middle" font-size="11" fill="#444">PM Awas Yojana | NSP | Ujjwala</text>
+  <text x="215" y="630" text-anchor="middle" font-size="10" fill="#666">(official data from india.gov.in)</text>
+
+  <!-- Arrow Data->RAG -->
+  <line x1="215" y1="510" x2="215" y2="460" stroke="#5f6368" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="225" y="490" font-size="9" fill="#5f6368">Indexing</text>
+
+  <!-- === LABELS === -->
+  <rect x="820" y="70" width="150" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="895" y="93" text-anchor="middle" font-size="11" font-weight="600" fill="#1a73e8">3 Tabs</text>
+
+  <rect x="820" y="120" width="150" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="895" y="143" text-anchor="middle" font-size="11" font-weight="600" fill="#34a853">RAG-Enhanced</text>
+
+  <rect x="820" y="170" width="150" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="895" y="193" text-anchor="middle" font-size="11" font-weight="600" fill="#76b900">Nemotron-3-Super</text>
+
+  <rect x="820" y="220" width="150" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="895" y="243" text-anchor="middle" font-size="11" font-weight="600" fill="#ea4335">Official Sources</text>
+
+  <!-- Flow labels -->
+  <text x="500" y="280" text-anchor="middle" font-size="12" font-weight="600" fill="#5f6368">RAG Flow</text>
+
+  <rect x="800" y="510" width="170" height="55" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="885" y="533" text-anchor="middle" font-size="10" font-weight="600" fill="#5f6368">Safety Features</text>
+  <text x="885" y="550" text-anchor="middle" font-size="9" fill="#666">• Confidence indicators</text>
+  <text x="885" y="563" text-anchor="middle" font-size="9" fill="#666">• Disclaimers + CSC fallback</text>
+
+</svg>

@@ -1,0 +1,74 @@
+{
+  "id": "ayushman_bharat",
+  "name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+  "name_hi": "आयुष्मान भारत - प्रधानमंत्री जन आरोग्य योजना (पीएम-जेएवाई)",
+  "ministry": "Ministry of Health and Family Welfare",
+  "type": "Health Insurance",
+  "summary": "World's largest health insurance scheme providing ₹5 lakh per family per year for secondary and tertiary care hospitalization to economically vulnerable families.",
+  "summary_hi": "दुनिया की सबसे बड़ी स्वास्थ्य बीमा योजना, जो आर्थिक रूप से कमजोर परिवारों को माध्यमिक और तृतीयक देखभाल अस्पताल में भर्ती होने पर प्रति परिवार प्रति वर्ष ₹5 लाख का कवर प्रदान करती है।",
+  "benefits": [
+    "Health insurance cover of ₹5,00,000 per family per year",
+    "Covers pre-hospitalization (3 days) and post-hospitalization (15 days) expenses",
+    "Cashless treatment at empaneled public and private hospitals",
+    "Covers 1,949+ medical procedures across 27 specialties",
+    "No cap on family size or age of members",
+    "Pre-existing diseases covered from day one",
+    "Transportation allowance up to ₹1,000 per hospitalization"
+  ],
+  "eligibility": {
+    "who_can_apply": [
+      "Families identified through SECC 2011 database",
+      "Families living in rural areas with predefined deprivation criteria (D1-D5)",
+      "Urban families belonging to 11 defined occupational categories (rag pickers, beggars, domestic workers, etc.)",
+      "All families already covered under RSBY or other state health schemes may be migrated"
+    ],
+    "who_cannot_apply": [
+      "Families not listed in the SECC 2011 deprivation database",
+      "Families owning a motor vehicle (two-wheeler/three-wheeler/four-wheeler)",
+      "Families having a member with a government job",
+      "Families paying income tax",
+      "Families owning agricultural land above state-specific thresholds"
+    ],
+    "documents_required": [
+      "Aadhaar card (recommended)",
+      "SECC 2011 ration card number or PM-JAY card",
+      "Identification proof (Voter ID, Driving License, etc.)",
+      "Mobile phone number"
+    ]
+  },
+  "application_process": {
+    "how_to_apply": [
+      "Check eligibility by sending PMJAY to 56677 or visiting pmjay.gov.in",
+      "If eligible, visit any empaneled hospital with identification documents",
+      "The hospital's Ayushman Mitra will verify your details through the PM-JAY portal",
+      "A PM-JAY e-card will be generated on the spot",
+      "Treatment is cashless — no money needs to be paid at empaneled hospitals"
+    ],
+    "portal_url": "https://pmjay.gov.in",
+    "helpline": "14555 (toll-free)"
+  },
+  "faq": [
+    {
+      "q": "How do I know if my family is eligible?",
+      "a": "Type PMJAY and send to 56677 from your mobile, or visit pmjay.gov.in and check eligibility with your ration card or mobile number."
+    },
+    {
+      "q": "Do I need to pay any premium?",
+      "a": "No. PM-JAY is fully government-funded. There is no premium, no enrollment fee, and no renewal fee."
+    },
+    {
+      "q": "Can I get treatment in any hospital?",
+      "a": "Only at empaneled public and private hospitals. Check pmjay.gov.in for the list of empaneled hospitals near you."
+    },
+    {
+      "q": "I lost my PM-JAY card — what do I do?",
+      "a": "Visit any empaneled hospital and they can regenerate your e-card using Aadhaar or other ID. You can also download it from pmjay.gov.in."
+    }
+  ],
+  "official_sources": [
+    "https://pmjay.gov.in",
+    "https://www.nha.gov.in"
+  ],
+  "last_updated": "2026-05-20",
+  "tags": ["health", "insurance", "hospitalization", "poor-families"]
+}

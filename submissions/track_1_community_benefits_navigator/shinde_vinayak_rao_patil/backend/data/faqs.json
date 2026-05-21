@@ -1,0 +1,36 @@
+{
+  "general_faqs": [
+    {
+      "q": "What is a Common Service Centre (CSC) and how can it help me?",
+      "a": "CSCs are physical access points across India (usually in villages) that provide government services digitally. They can help you apply for schemes, fill forms, upload documents, and track application status for a nominal fee. Find your nearest CSC at csc.gov.in."
+    },
+    {
+      "q": "I don't have Aadhaar — can I still apply for schemes?",
+      "a": "Most central schemes now require Aadhaar. If you don't have one, visit the nearest Aadhaar enrollment centre (often at post office or bank). It's free. You can also apply for some schemes with alternative ID proofs like Voter ID, but Aadhaar is strongly recommended."
+    },
+    {
+      "q": "What is DBT (Direct Benefit Transfer)?",
+      "a": "DBT means the government transfers money directly into your bank account instead of giving cash or cheques through middlemen. Most scheme benefits (PM-KISAN, scholarship, subsidy) are sent via DBT. Your bank account must be linked to Aadhaar."
+    },
+    {
+      "q": "How do I link my Aadhaar to my bank account?",
+      "a": "Visit your bank branch with your Aadhaar and bank passbook, fill the linking form, and submit. Many banks also allow linking through their mobile app or ATM. You can also check if it's already linked via the BHIM app or UPI."
+    },
+    {
+      "q": "Are there agents/touts who can get my scheme approved faster for a fee?",
+      "a": "No. All government schemes are free to apply. Do not pay anyone who promises faster approval. Visit official portals or CSCs for help. Report fraud to the helpline of the respective ministry."
+    },
+    {
+      "q": "I am not able to read/write — how do I apply?",
+      "a": "Visit your nearest Common Service Centre (CSC) or Gram Panchayat office. The staff will help you fill the form, upload documents, and track the application. This service is available at nominal rates."
+    },
+    {
+      "q": "What if my scheme application is rejected?",
+      "a": "Applications are usually rejected due to incomplete documents, incorrect information, or eligibility mismatch. Check the rejection reason on the portal, correct the issue, and reapply. You can also visit the local government office for help."
+    },
+    {
+      "q": "Can I apply for multiple schemes at the same time?",
+      "a": "Yes, you can apply for multiple schemes simultaneously as long as you meet the eligibility criteria for each. There is no restriction on availing multiple benefits."
+    }
+  ]
+}

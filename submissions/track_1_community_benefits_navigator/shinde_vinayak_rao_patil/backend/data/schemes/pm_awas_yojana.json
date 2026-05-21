@@ -1,0 +1,77 @@
+{
+  "id": "pm_awas_yojana",
+  "name": "Pradhan Mantri Awas Yojana (PMAY) - Housing for All",
+  "name_hi": "प्रधानमंत्री आवास योजना (पीएमएवाई) - सबके लिए आवास",
+  "ministry": "Ministry of Housing and Urban Affairs",
+  "type": "Housing Subsidy",
+  "summary": "Government scheme providing affordable housing with financial assistance up to ₹2.67 lakh to urban poor and rural households for construction or purchase of a house.",
+  "summary_hi": "शहरी गरीब और ग्रामीण परिवारों को घर निर्माण या खरीद के लिए ₹2.67 लाख तक की वित्तीय सहायता प्रदान करने वाली सरकारी योजना।",
+  "benefits": [
+    "Credit-Linked Subsidy (CLSS): Interest subsidy of 6.5% on home loans up to ₹6 lakh for EWS/LIG",
+    "Beneficiary-Led Construction (BLC): ₹1.5 lakh subsidy for construction of new house on own land (rural)",
+    "Affordable Housing in Partnership (AHP): Houses built in partnership with private developers at affordable prices",
+    "In-Situ Slum Redevelopment (ISSR): Using land as a resource for redevelopment of slums",
+    "Subsidy for purchase of ready-built house"
+  ],
+  "eligibility": {
+    "who_can_apply": [
+      "Economically Weaker Section (EWS): Annual family income up to ₹3 lakh",
+      "Low Income Group (LIG): Annual family income ₹3-6 lakh",
+      "Middle Income Group-I (MIG-I): Annual family income ₹6-12 lakh",
+      "Middle Income Group-II (MIG-II): Annual family income ₹12-18 lakh",
+      "Family should not own a pucca house in any part of India",
+      "Women ownership is mandatory for EWS/LIG categories"
+    ],
+    "who_cannot_apply": [
+      "Families who already own a pucca house anywhere in India",
+      "Families who have previously availed housing assistance from any government scheme",
+      "Income tax payers (for EWS/LIG categories)",
+      "Families above the income thresholds for each category"
+    ],
+    "documents_required": [
+      "Aadhaar card of all adult family members",
+      "Income certificate (format available on pmaymis.gov.in)",
+      "Caste certificate (if applicable)",
+      "Land documents (for BLC component)",
+      "Bank account details",
+      "Passport-size photos",
+      "Mobile number"
+    ]
+  },
+  "application_process": {
+    "how_to_apply": [
+      "Visit pmaymis.gov.in (urban) or pmaygramin.gov.in (rural)",
+      "Click on 'Citizen Assessment' → 'Apply for Subsidy'",
+      "Fill in personal details, income, family members, and Aadhaar",
+      "Upload required documents",
+      "Get a unique application number — save it for future reference",
+      "Alternatively, visit the nearest Common Service Centre (CSC) or municipal office"
+    ],
+    "portal_url": "https://pmaymis.gov.in",
+    "helpline": "1800-11-6161"
+  },
+  "faq": [
+    {
+      "q": "Can I apply if I already have a home loan?",
+      "a": "Yes, if you have taken a loan after the PMAY notification date and do not own a pucca house, you can apply for the subsidy."
+    },
+    {
+      "q": "My wife is the co-owner — does that satisfy women ownership?",
+      "a": "Yes, either sole or joint ownership with wife/grandmother/mother/daughter works for the women ownership requirement."
+    },
+    {
+      "q": "How long does it take to get the subsidy?",
+      "a": "The subsidy is credited directly to your home loan account within 30-60 days of application approval."
+    },
+    {
+      "q": "Can I use PMAY for home renovation?",
+      "a": "PMAY Urban does not cover renovation. However, PMAY-G (Rural) has a 'Retrofitting' component for existing kutcha houses in select cases."
+    }
+  ],
+  "official_sources": [
+    "https://pmaymis.gov.in",
+    "https://pmaygramin.gov.in"
+  ],
+  "last_updated": "2026-05-20",
+  "tags": ["housing", "subsidy", "home-loan", "ews", "lig"]
+}

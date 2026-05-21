@@ -1,0 +1,71 @@
+{
+  "id": "pm_kisan",
+  "name": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+  "name_hi": "पीएम-किसान (प्रधानमंत्री किसान सम्मान निधि)",
+  "ministry": "Ministry of Agriculture and Farmers' Welfare",
+  "type": "Direct Benefit Transfer",
+  "summary": "Income support scheme providing ₹6,000 per year to all landholding farmer families across India.",
+  "summary_hi": "भारत के सभी भूमिधारक किसान परिवारों को प्रति वर्ष ₹6,000 की आय सहायता प्रदान करने वाली योजना।",
+  "benefits": [
+    "₹6,000 per year transferred directly to bank accounts of eligible farmers",
+    "Amount released in three equal installments of ₹2,000 every four months",
+    "No application fee — fully government-funded"
+  ],
+  "eligibility": {
+    "who_can_apply": [
+      "All landholding farmer families in India",
+      "Farmers who own cultivable land",
+      "Families with land recorded in state land records"
+    ],
+    "who_cannot_apply": [
+      "Income tax payers (non-agricultural income)",
+      "Retired pensioners with monthly pension > ₹10,000",
+      "Professionals (doctors, engineers, lawyers, architects, chartered accountants)",
+      "Current and former MPs/MLAs/MLCs",
+      "Current and former mayors/chairpersons of municipalities",
+      "Government employees (including public sector undertakings)",
+      "Farmers who voluntarily surrendered their land"
+    ],
+    "documents_required": [
+      "Aadhaar card (mandatory)",
+      "Land documents (Record of Rights / Khatauni / 7/12 extract)",
+      "Bank account details (with IFSC code)",
+      "Mobile phone number linked to Aadhaar"
+    ]
+  },
+  "application_process": {
+    "how_to_apply": "The scheme is centrally administered but state governments identify and register beneficiaries based on land records. Farmers do not need to individually apply in most cases — names are automatically included if land records are updated.",
+    "if_not_included": [
+      "Visit the nearest Common Service Centre (CSC) or agriculture department office",
+      "Provide land documents and Aadhaar to get registered",
+      "Check status online at pmkisan.gov.in using Aadhaar number or bank account details",
+      "If land records are not updated, approach the local Tehsildar/Patwari for correction"
+    ],
+    "portal_url": "https://pmkisan.gov.in",
+    "helpline": "011-24300606"
+  },
+  "faq": [
+    {
+      "q": "I am a tenant farmer — am I eligible?",
+      "a": "Tenant farmers whose names are not recorded in land records are generally not covered. You must have your name in the state land records."
+    },
+    {
+      "q": "My land is in my father's name — can I get PM-KISAN?",
+      "a": "The benefit is per family, not per individual. If your father is already receiving it as the head of the family, other members do not get separate benefits."
+    },
+    {
+      "q": "I received only one installment — what about the rest?",
+      "a": "Check your status on pmkisan.gov.in. It may be due to Aadhaar seeding issues or bank account validation problems."
+    },
+    {
+      "q": "How do I update my bank account details?",
+      "a": "Visit your local agriculture department office or CSC with Aadhaar and new bank details to update your records."
+    }
+  ],
+  "official_sources": [
+    "https://pmkisan.gov.in",
+    "https://agriculture.gov.in"
+  ],
+  "last_updated": "2026-05-20",
+  "tags": ["agriculture", "farmers", "income-support", "dbt"]
+}

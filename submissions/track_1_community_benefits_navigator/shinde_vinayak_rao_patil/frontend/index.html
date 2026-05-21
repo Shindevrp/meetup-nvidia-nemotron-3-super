@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Benefits Navigator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Community Benefits Navigator</h1>
+      <p id="subtitle">Indian Government Welfare Schemes Assistant</p>
+      <div class="header-controls">
+        <button id="lang-toggle" class="btn-small" onclick="toggleLang()">हिन्दी</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="chat" onclick="switchTab('chat')">💬 Chat</button>
+      <button class="tab" data-tab="eligibility" onclick="switchTab('eligibility')">✅ Eligibility Checker</button>
+      <button class="tab" data-tab="schemes" onclick="switchTab('schemes')">📋 Schemes</button>
+    </nav>
+
+    <main>
+      <!-- CHAT TAB -->
+      <section id="tab-chat" class="tab-content active">
+        <div id="chat-messages">
+          <div class="message bot">
+            <div class="bubble">
+              <strong>नमस्ते! 👋</strong><br/>
+              I'm your Community Benefits Navigator. I can help you find and apply for Indian government welfare schemes.<br/><br/>
+              <strong>Try asking:</strong>
+              <ul>
+                <li>"What schemes am I eligible for?"</li>
+                <li>"How to apply for PM-KISAN?"</li>
+                <li>"Documents needed for Ayushman Bharat"</li>
+              </ul>
+              <div class="disclaimer">⚠️ AI-generated — always verify with official sources</div>
+            </div>
+          </div>
+        </div>
+        <div class="input-area">
+          <div id="confidence-indicator" class="hidden">
+            <span class="dot" id="conf-dot"></span>
+            <span id="conf-label">Confidence</span>
+          </div>
+          <div class="input-row">
+            <textarea id="chat-input" rows="1" placeholder="Type your question here..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ELIGIBILITY TAB -->
+      <section id="tab-eligibility" class="tab-content">
+        <div class="wizard">
+          <h2>Check Your Eligibility</h2>
+          <p id="eligibility-desc">Answer a few questions to find which schemes you may qualify for.</p>
+          <form id="eligibility-form" onsubmit="checkEligibility(event)">
+            <div class="form-group">
+              <label for="el-age">Age</label>
+              <input type="number" id="el-age" min="0" max="120" placeholder="e.g. 35" />
+            </div>
+            <div class="form-group">
+              <label for="el-income">Annual Family Income (₹)</label>
+              <input type="number" id="el-income" min="0" placeholder="e.g. 200000" />
+            </div>
+            <div class="form-group">
+              <label for="el-occupation">Occupation</label>
+              <select id="el-occupation">
+                <option value="">Select...</option>
+                <option value="farmer">Farmer</option>
+                <option value="daily_wage">Daily Wage Worker</option>
+                <option value="government">Government Employee</option>
+                <option value="private">Private Sector</option>
+                <option value="student">Student</option>
+                <option value="unemployed">Unemployed</option>
+                <option value="retired">Retired</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="el-gender">Gender</label>
+              <select id="el-gender">
+                <option value="">Select...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group checkbox-group">
+              <label><input type="checkbox" id="el-landowner" /> I own agricultural land</label>
+              <label><input type="checkbox" id="el-student" /> I am a student</label>
+              <label><input type="checkbox" id="el-has-lpg" /> I already have an LPG connection</label>
+              <label><input type="checkbox" id="el-owns-house" /> My family owns a pucca house</label>
+            </div>
+            <button type="submit" class="btn-primary">Check Eligibility</button>
+          </form>
+          <div id="eligibility-results" class="hidden"></div>
+        </div>
+      </section>
+
+      <!-- SCHEMES TAB -->
+      <section id="tab-schemes" class="tab-content">
+        <div class="scheme-browser">
+          <h2>Supported Schemes</h2>
+          <input type="text" id="scheme-search" placeholder="Search schemes..." oninput="filterSchemes()" />
+          <div id="scheme-list"></div>
+          <div id="scheme-detail" class="hidden"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Powered by NVIDIA Nemotron-3-Super | Built for HydPy Community Contest 2026</p>
+      <p class="disclaimer">⚠️ This is an AI assistant. Always verify information with official government portals and CSC centres.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
