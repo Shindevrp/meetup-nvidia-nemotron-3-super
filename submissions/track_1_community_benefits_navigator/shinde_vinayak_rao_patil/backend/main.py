@@ -5,9 +5,13 @@
 import os
 import sys
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 
 # Ensure backend/ is on sys.path so subpackages are importable
 sys.path.insert(0, os.path.dirname(__file__))
+
+# Load .env file from backend/ directory so API keys are available via os.getenv
+load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
