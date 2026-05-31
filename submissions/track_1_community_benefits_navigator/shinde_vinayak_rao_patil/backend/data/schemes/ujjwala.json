@@ -34,6 +34,18 @@
       "Bank account details (optional, for subsidy transfer)"
     ]
   },
+  "eligibility_rules": [
+    {"field": "gender", "op": "in_optional", "value": ["female", "woman"], "fail_msg": "PMUY is for women of the household"},
+    {"field": "has_lpg", "op": "eq", "value": false, "fail_msg": "Household already has LPG connection"},
+    {"field": "annual_income", "op": "lt", "value": 200000, "fail_msg": "May be above poverty line threshold"}
+  ],
+  "confidence_scoring": {
+    "base": 0.8, "penalty": 0.25, "min": 0.05,
+    "overrides": [
+      {"field": "gender", "op": "not_in", "value": ["female", "woman"], "confidence": 0.1},
+      {"field": "has_lpg", "op": "eq", "value": true, "confidence": 0.05}
+    ]
+  },
   "application_process": {
     "how_to_apply": [
       "Visit the nearest HPCL/IOCL/BPCL LPG distributor (gas agency)",

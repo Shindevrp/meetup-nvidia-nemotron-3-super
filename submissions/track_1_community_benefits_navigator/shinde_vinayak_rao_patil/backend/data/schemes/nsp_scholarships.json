@@ -33,6 +33,10 @@
       "Fee receipt / bonafide certificate from institution"
     ]
   },
+  "eligibility_rules": [
+    {"field": "is_student", "op": "eq", "value": true, "fail_msg": "NSP is for enrolled students only"}
+  ],
+  "confidence_scoring": {"base": 0.9, "if_not_student": 0.1, "min": 0.1},
   "application_process": {
     "how_to_apply": [
       "Visit https://scholarships.gov.in",

@@ -38,6 +38,20 @@
       "Mobile number"
     ]
   },
+  "eligibility_rules": [
+    {"field": "owns_pucca_house", "op": "eq", "value": false, "fail_msg": "Should not own a pucca house"},
+    {"field": "annual_income", "op": "lt", "value": 1800000, "fail_msg": "Family income exceeds MIG-II limit of ₹18L/year"}
+  ],
+  "confidence_scoring": {
+    "base": 0.9, "penalty": 0.15, "min": 0.05,
+    "brackets": [
+      {"max_income": 300000, "value": 0.9},
+      {"max_income": 600000, "value": 0.7},
+      {"max_income": 1200000, "value": 0.4},
+      {"max_income": 1800000, "value": 0.2}
+    ],
+    "overrides": [{"field": "owns_pucca_house", "op": "eq", "value": true, "confidence": 0.05}]
+  },
   "application_process": {
     "how_to_apply": [
       "Visit pmaymis.gov.in (urban) or pmaygramin.gov.in (rural)",

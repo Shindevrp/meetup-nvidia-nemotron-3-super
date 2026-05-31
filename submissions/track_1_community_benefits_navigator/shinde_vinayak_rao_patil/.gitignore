@@ -3,7 +3,10 @@ __pycache__/
 *.pyc
 chroma_db/
 .env
+backend/.env
+backend/data/sessions.json
 *.egg-info/
 dist/
 build/
 .DS_Store
+.indexed

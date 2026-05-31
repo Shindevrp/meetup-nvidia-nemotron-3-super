@@ -1,26 +1,29 @@
-# Embedding pipeline: chunks scheme JSON documents, embeds them with E5,
-# and stores in ChromaDB for semantic retrieval
+from __future__ import annotations
 
 import json
 import os
+from typing import List, Optional, Tuple
 
 from sentence_transformers import SentenceTransformer
-import chromadb
-from chromadb.config import Settings
 
 SCHEMES_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "schemes")
 CHROMA_DIR = os.path.join(os.path.dirname(__file__), "..", "chroma_db")
 COLLECTION_NAME = "schemes"
 EMBED_MODEL = "intfloat/multilingual-e5-small"
 
+_model: Optional[SentenceTransformer] = None
 
-def get_embedding_model():
-    """Load the multilingual E5 embedding model from HuggingFace."""
-    return SentenceTransformer(EMBED_MODEL)
+
+def get_embedding_model() -> SentenceTransformer:
+    global _model
+    if _model is None:
+        _model = SentenceTransformer(EMBED_MODEL)
+    return _model
 
 
 def get_chroma_collection():
-    """Get or create the persistent ChromaDB collection for scheme documents."""
+    import chromadb
+    from chromadb.config import Settings
     client = chromadb.PersistentClient(
         path=CHROMA_DIR,
         settings=Settings(anonymized_telemetry=False),
@@ -28,20 +31,13 @@ def get_chroma_collection():
     return client.get_or_create_collection(name=COLLECTION_NAME)
 
 
-def chunk_scheme_data(schemes_dir: str):
-    """Read all scheme JSON files and split each into granular chunks
-    (summary, benefits, eligibility rules, process steps, FAQs)
-    with associated metadata for source tracking."""
-    chunks = []
-    metadatas = []
-    ids = []
-
+def chunk_scheme_data(schemes_dir: str) -> Tuple[List[str], List[dict], List[str]]:
+    chunks, metadatas, ids = [], [], []
     for fname in os.listdir(schemes_dir):
         if not fname.endswith(".json"):
             continue
         with open(os.path.join(schemes_dir, fname), "r", encoding="utf-8") as f:
             data = json.load(f)
-
         scheme_id = data["id"]
 
         chunks.append(data["summary"])
@@ -53,23 +49,24 @@ def chunk_scheme_data(schemes_dir: str):
             metadatas.append({"scheme_id": scheme_id, "type": "benefit", "name": data["name"]})
             ids.append(f"{scheme_id}_benefit_{i}")
 
+        el = data.get("eligibility", {})
         for key in ("who_can_apply", "who_cannot_apply", "documents_required"):
-            for j, item in enumerate(data.get("eligibility", {}).get(key, [])):
+            for j, item in enumerate(el.get(key, [])):
                 chunks.append(item)
                 metadatas.append({"scheme_id": scheme_id, "type": f"eligibility_{key}", "name": data["name"]})
                 ids.append(f"{scheme_id}_{key}_{j}")
 
-        for key in ("how_to_apply",):
-            val = data.get("application_process", {}).get(key, [])
-            if isinstance(val, list):
-                for j, item in enumerate(val):
-                    chunks.append(item)
-                    metadatas.append({"scheme_id": scheme_id, "type": f"process_{key}", "name": data["name"]})
-                    ids.append(f"{scheme_id}_{key}_{j}")
-            elif isinstance(val, str):
-                chunks.append(val)
-                metadatas.append({"scheme_id": scheme_id, "type": f"process_{key}", "name": data["name"]})
-                ids.append(f"{scheme_id}_{key}_0")
+        ap = data.get("application_process", {})
+        how_to = ap.get("how_to_apply", [])
+        if isinstance(how_to, list):
+            for j, item in enumerate(how_to):
+                chunks.append(item)
+                metadatas.append({"scheme_id": scheme_id, "type": "process_how_to_apply", "name": data["name"]})
+                ids.append(f"{scheme_id}_how_to_apply_{j}")
+        elif isinstance(how_to, str):
+            chunks.append(how_to)
+            metadatas.append({"scheme_id": scheme_id, "type": "process_how_to_apply", "name": data["name"]})
+            ids.append(f"{scheme_id}_how_to_apply_0")
 
         for faq in data.get("faq", []):
             chunks.append(f"Q: {faq['q']} A: {faq['a']}")
@@ -80,25 +77,28 @@ def chunk_scheme_data(schemes_dir: str):
 
 
 def embed_and_store():
-    """Generate embeddings for all scheme chunks and store them in ChromaDB.
-    Idempotent: skips if collection already has data."""
     model = get_embedding_model()
     collection = get_chroma_collection()
-
     chunks, metadatas, ids = chunk_scheme_data(SCHEMES_DIR)
     embeddings = model.encode(chunks, normalize_embeddings=True).tolist()
 
     count = collection.count()
     if count > 0:
-        print(f"  Collection already has {count} chunks — skipping indexing.")
-        print("  Delete chroma_db/ directory to re-index.")
         return collection
 
-    collection.add(
-        embeddings=embeddings,
-        documents=chunks,
-        metadatas=metadatas,
-        ids=ids,
-    )
-    print(f"Stored {len(chunks)} chunks in ChromaDB")
+    collection.add(embeddings=embeddings, documents=chunks, metadatas=metadatas, ids=ids)
     return collection
+
+
+def delete_and_reindex():
+    try:
+        collection = get_chroma_collection()
+        count = collection.count()
+        if count > 0:
+            collection.delete(ids=collection.get()["ids"])
+    except Exception:
+        pass
+    import shutil
+    if os.path.isdir(CHROMA_DIR):
+        shutil.rmtree(CHROMA_DIR, ignore_errors=True)
+    return embed_and_store()

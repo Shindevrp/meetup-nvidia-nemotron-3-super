@@ -4,39 +4,72 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Community Benefits Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;700&family=Noto+Sans+Tamil:wght@400;500;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <div id="app">
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h3>Chat History</h3>
+        <button class="btn-small" onclick="newChat()">+ New Chat</button>
+      </div>
+      <div class="sidebar-search">
+        <input type="text" id="sidebar-search" placeholder="Search conversations..." oninput="filterSidebar()" />
+      </div>
+      <div id="sidebar-list" class="sidebar-list"></div>
+    </div>
+
     <header>
-      <h1>Community Benefits Navigator</h1>
-      <p id="subtitle">Indian Government Welfare Schemes Assistant</p>
+      <div class="header-brand">
+        <button id="sidebar-toggle" class="btn-small" onclick="toggleSidebar()" title="Chat history" style="margin-right:8px">☰</button>
+        <div>
+          <h1>Community Benefits Navigator</h1>
+          <p id="subtitle">Indian Government Welfare Schemes Assistant</p>
+        </div>
+      </div>
       <div class="header-controls">
-        <button id="lang-toggle" class="btn-small" onclick="toggleLang()">हिन्दी</button>
+        <button id="dark-toggle" class="btn-small" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+        <select id="lang-select" class="btn-small" onchange="setLang(this.value)">
+          <option value="english">English</option>
+          <option value="hindi">हिन्दी</option>
+          <option value="telugu">తెలుగు</option>
+          <option value="tamil">தமிழ்</option>
+          <option value="bengali">বাংলা</option>
+          <option value="marathi">मराठी</option>
+        </select>
+        <button class="btn-small btn-danger" onclick="clearChat()">New</button>
       </div>
     </header>
 
     <nav class="tabs">
-      <button class="tab active" data-tab="chat" onclick="switchTab('chat')">💬 Chat</button>
-      <button class="tab" data-tab="eligibility" onclick="switchTab('eligibility')">✅ Eligibility Checker</button>
-      <button class="tab" data-tab="schemes" onclick="switchTab('schemes')">📋 Schemes</button>
+      <button class="tab active" data-tab="chat" onclick="switchTab('chat')">Chat</button>
+      <button class="tab" data-tab="eligibility" onclick="switchTab('eligibility')">Eligibility</button>
+      <button class="tab" data-tab="schemes" onclick="switchTab('schemes')">Schemes</button>
+      <button class="tab" data-tab="compare" onclick="switchTab('compare')">Compare</button>
+      <button class="tab" data-tab="csc" onclick="switchTab('csc')">CSC Locator</button>
     </nav>
 
     <main>
-      <!-- CHAT TAB -->
       <section id="tab-chat" class="tab-content active">
         <div id="chat-messages">
           <div class="message bot">
             <div class="bubble">
-              <strong>नमस्ते! 👋</strong><br/>
-              I'm your Community Benefits Navigator. I can help you find and apply for Indian government welfare schemes.<br/><br/>
+              <strong>Welcome.</strong><br/>
+              I can help you find and apply for Indian government welfare schemes.<br/><br/>
               <strong>Try asking:</strong>
               <ul>
                 <li>"What schemes am I eligible for?"</li>
                 <li>"How to apply for PM-KISAN?"</li>
                 <li>"Documents needed for Ayushman Bharat"</li>
               </ul>
-              <div class="disclaimer">⚠️ AI-generated — always verify with official sources</div>
+              <div class="disclaimer">Note: AI-generated — always verify with official sources</div>
             </div>
           </div>
         </div>
@@ -46,13 +79,13 @@
             <span id="conf-label">Confidence</span>
           </div>
           <div class="input-row">
-            <textarea id="chat-input" rows="1" placeholder="Type your question here..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+            <textarea id="chat-input" rows="1" placeholder="Type your question here..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+            <button id="mic-btn" class="btn-icon" onclick="startVoice()" title="Voice input">🎤</button>
             <button id="send-btn" onclick="sendMessage()">Send</button>
           </div>
         </div>
       </section>
 
-      <!-- ELIGIBILITY TAB -->
       <section id="tab-eligibility" class="tab-content">
         <div class="wizard">
           <h2>Check Your Eligibility</h2>
@@ -63,7 +96,7 @@
               <input type="number" id="el-age" min="0" max="120" placeholder="e.g. 35" />
             </div>
             <div class="form-group">
-              <label for="el-income">Annual Family Income (₹)</label>
+              <label for="el-income">Annual Family Income (INR)</label>
               <input type="number" id="el-income" min="0" placeholder="e.g. 200000" />
             </div>
             <div class="form-group">
@@ -95,13 +128,12 @@
               <label><input type="checkbox" id="el-has-lpg" /> I already have an LPG connection</label>
               <label><input type="checkbox" id="el-owns-house" /> My family owns a pucca house</label>
             </div>
-            <button type="submit" class="btn-primary">Check Eligibility</button>
+            <button type="submit" class="btn-primary" id="eligibility-btn">Check Eligibility</button>
           </form>
           <div id="eligibility-results" class="hidden"></div>
         </div>
       </section>
 
-      <!-- SCHEMES TAB -->
       <section id="tab-schemes" class="tab-content">
         <div class="scheme-browser">
           <h2>Supported Schemes</h2>
@@ -110,11 +142,46 @@
           <div id="scheme-detail" class="hidden"></div>
         </div>
       </section>
+
+      <section id="tab-compare" class="tab-content">
+        <div class="wizard">
+          <h2>Compare Schemes</h2>
+          <p>Select two schemes to compare side-by-side.</p>
+          <div class="compare-selectors">
+            <div class="form-group">
+              <label for="compare-a">Scheme A</label>
+              <select id="compare-a"></select>
+            </div>
+            <div class="form-group">
+              <label for="compare-b">Scheme B</label>
+              <select id="compare-b"></select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="compareSchemes()">Compare</button>
+          <div id="compare-results" class="hidden"></div>
+        </div>
+      </section>
+
+      <section id="tab-csc" class="tab-content">
+        <div class="wizard">
+          <h2>CSC Locator</h2>
+          <p>Find Common Service Centres (CSCs) near you for help with scheme applications.</p>
+          <div class="csc-controls">
+            <div class="form-group">
+              <label for="csc-location">Enter your city or pincode</label>
+              <input type="text" id="csc-location" placeholder="e.g. Hyderabad, 500001" />
+            </div>
+            <button class="btn-primary" onclick="searchCSC()">Search</button>
+          </div>
+          <div id="csc-map" class="csc-map"></div>
+          <div id="csc-results"></div>
+        </div>
+      </section>
     </main>
 
     <footer>
       <p>Powered by NVIDIA Nemotron-3-Super | Built for HydPy Community Contest 2026</p>
-      <p class="disclaimer">⚠️ This is an AI assistant. Always verify information with official government portals and CSC centres.</p>
+      <p class="disclaimer">Note: This is an AI assistant. Always verify information with official government portals and CSC centres.</p>
     </footer>
   </div>
 

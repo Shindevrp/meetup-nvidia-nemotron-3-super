@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" font-family="Segoe UI, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1100" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f0f4ff"/>
+      <stop offset="100%" stop-color="#e8f0fe"/>
+    </linearGradient>
+    <linearGradient id="user" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a73e8"/>
+      <stop offset="100%" stop-color="#1557b0"/>
+    </linearGradient>
+    <linearGradient id="nim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#76b900"/>
+      <stop offset="100%" stop-color="#5c9400"/>
+    </linearGradient>
+    <linearGradient id="data" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ea4335"/>
+      <stop offset="100%" stop-color="#c5221f"/>
+    </linearGradient>
+    <linearGradient id="session" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6d01"/>
+      <stop offset="100%" stop-color="#e65100"/>
+    </linearGradient>
+    <linearGradient id="features" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9334e6"/>
+      <stop offset="100%" stop-color="#7b1fa2"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f6368"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a73e8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="820" fill="url(#bg)" rx="16"/>
+
+  <!-- Title -->
+  <text x="550" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#202124">Community Benefits Navigator — Architecture</text>
+  <text x="550" y="54" text-anchor="middle" font-size="11" fill="#5f6368">FastAPI + ChromaDB + Nemotron-3-Super | 6 Languages | Session Persistence</text>
+
+  <!-- === LAYER 1: USER === -->
+  <rect x="50" y="75" width="250" height="190" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="50" y="75" width="250" height="36" rx="12" fill="url(#user)"/>
+  <text x="175" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="white">👤 User Layer</text>
+  <text x="175" y="130" text-anchor="middle" font-size="11" fill="#444">5-Tab SPA (vanilla JS)</text>
+  <text x="175" y="148" text-anchor="middle" font-size="11" fill="#444">Mobile-first / Responsive</text>
+  <text x="175" y="166" text-anchor="middle" font-size="11" fill="#444">6 Language Toggle + Dark Mode</text>
+  <text x="175" y="184" text-anchor="middle" font-size="11" fill="#444">🎤 Voice Input (SpeechRecognition)</text>
+  <text x="175" y="202" text-anchor="middle" font-size="11" fill="#444">Chat History Sidebar</text>
+  <text x="175" y="224" text-anchor="middle" font-size="10" fill="#666">Chat | Eligibility | Browse | Compare | CSC</text>
+
+  <!-- Arrow U->B -->
+  <line x1="300" y1="160" x2="380" y2="160" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="330" y="153" text-anchor="middle" font-size="9" fill="#1a73e8">HTTP / JSON</text>
+
+  <!-- === LAYER 2: BACKEND === -->
+  <rect x="390" y="75" width="270" height="190" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="390" y="75" width="270" height="36" rx="12" fill="#1a73e8"/>
+  <text x="525" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="white">⚡ Backend Layer</text>
+  <text x="525" y="130" text-anchor="middle" font-size="11" fill="#444">FastAPI (Python)</text>
+  <text x="525" y="150" text-anchor="middle" font-size="11" fill="#444">POST /api/chat | POST /api/eligibility</text>
+  <text x="525" y="170" text-anchor="middle" font-size="11" fill="#444">GET /api/schemes | GET /api/sessions/*</text>
+  <text x="525" y="190" text-anchor="middle" font-size="11" fill="#444">Session Store (JSON persisted)</text>
+  <text x="525" y="210" text-anchor="middle" font-size="11" fill="#444">Rate Limiter (30 req/min)</text>
+  <text x="525" y="230" text-anchor="middle" font-size="10" fill="#666">Eligibility Rule Engine</text>
+
+  <!-- Arrow B->RAG -->
+  <line x1="525" y1="265" x2="525" y2="320" stroke="#5f6368" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="535" y="298" font-size="9" fill="#5f6368">Context query</text>
+
+  <!-- === LAYER 3: RAG === -->
+  <rect x="50" y="335" width="340" height="190" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="50" y="335" width="340" height="36" rx="12" fill="#34a853"/>
+  <text x="220" y="358" text-anchor="middle" font-size="13" font-weight="600" fill="white">🔍 RAG Pipeline</text>
+  <text x="220" y="390" text-anchor="middle" font-size="11" fill="#444">ChromaDB Vector Store</text>
+  <text x="220" y="410" text-anchor="middle" font-size="11" fill="#444">intfloat/multilingual-e5-small Embeddings</text>
+  <text x="220" y="430" text-anchor="middle" font-size="11" fill="#444">Top-5 Semantic Retrieval</text>
+  <text x="220" y="450" text-anchor="middle" font-size="11" fill="#444">@lru_cache for Query Results</text>
+  <text x="220" y="470" text-anchor="middle" font-size="11" fill="#444">Context Formatting with Citations</text>
+  <text x="220" y="495" text-anchor="middle" font-size="10" fill="#666">(scheme summaries, benefits, eligibility, process, FAQs)</text>
+
+  <!-- Arrow RAG->NIM -->
+  <line x1="390" y1="420" x2="530" y2="420" stroke="#5f6368" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="445" y="413" font-size="9" fill="#5f6368">Context + Query</text>
+
+  <!-- === LAYER 4: NIM / LLM === -->
+  <rect x="540" y="335" width="280" height="190" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="540" y="335" width="280" height="36" rx="12" fill="url(#nim)"/>
+  <text x="680" y="358" text-anchor="middle" font-size="13" font-weight="600" fill="white">🧠 LLM Layer</text>
+  <text x="680" y="390" text-anchor="middle" font-size="11" fill="#444">OpenRouter API</text>
+  <text x="680" y="410" text-anchor="middle" font-size="11" fill="#444">Nemotron-3-Super-120B-A12B</text>
+  <text x="680" y="430" text-anchor="middle" font-size="11" fill="#444">120B / 12B Active MoE</text>
+  <text x="680" y="450" text-anchor="middle" font-size="11" fill="#444">Grounded Generation (free tier)</text>
+  <text x="680" y="470" text-anchor="middle" font-size="11" fill="#444">Multi-language Prompt Engineering</text>
+  <text x="680" y="495" text-anchor="middle" font-size="10" fill="#666">(6 languages: en, hi, te, ta, bn, mr)</text>
+
+  <!-- Arrow NIM -> B -->
+  <path d="M 680 525 L 680 565 L 525 565 L 525 525" fill="none" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="610" y="561" font-size="9" fill="#1a73e8">Response</text>
+
+  <!-- === LAYER 5: DATA === -->
+  <rect x="50" y="580" width="340" height="150" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="50" y="580" width="340" height="36" rx="12" fill="url(#data)"/>
+  <text x="220" y="603" text-anchor="middle" font-size="13" font-weight="600" fill="white">📦 Data Layer</text>
+  <text x="220" y="635" text-anchor="middle" font-size="11" fill="#444">5 Govt Schemes (JSON + eligibility_rules)</text>
+  <text x="220" y="655" text-anchor="middle" font-size="11" fill="#444">PM-KISAN | Ayushman Bharat</text>
+  <text x="220" y="675" text-anchor="middle" font-size="11" fill="#444">PM Awas Yojana | NSP | Ujjwala</text>
+  <text x="220" y="700" text-anchor="middle" font-size="10" fill="#666">(data-driven rules engine — confidence scoring)</text>
+
+  <!-- Arrow Data->RAG -->
+  <line x1="220" y1="580" x2="220" y2="525" stroke="#5f6368" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="230" y="557" font-size="9" fill="#5f6368">Indexing</text>
+
+  <!-- === LAYER 6: SESSION / HISTORY === -->
+  <rect x="450" y="580" width="270" height="150" rx="12" fill="white" filter="url(#shadow)"/>
+  <rect x="450" y="580" width="270" height="36" rx="12" fill="url(#session)"/>
+  <text x="585" y="603" text-anchor="middle" font-size="13" font-weight="600" fill="white">💬 Session &amp; History</text>
+  <text x="585" y="635" text-anchor="middle" font-size="11" fill="#444">Anonymous Session IDs (browser)</text>
+  <text x="585" y="655" text-anchor="middle" font-size="11" fill="#444">7 REST Endpoints for CRUD</text>
+  <text x="585" y="675" text-anchor="middle" font-size="11" fill="#444">JSON File Persistence</text>
+  <text x="585" y="698" text-anchor="middle" font-size="10" fill="#666">(auto-title, group by date, search, rename, delete)</text>
+
+  <!-- === KEY FEATURES (right sidebar) === -->
+  <rect x="860" y="75" width="200" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="98" text-anchor="middle" font-size="11" font-weight="600" fill="#1a73e8">5 Tabs</text>
+
+  <rect x="860" y="120" width="200" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="143" text-anchor="middle" font-size="11" font-weight="600" fill="#34a853">RAG-Enhanced</text>
+
+  <rect x="860" y="165" width="200" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="188" text-anchor="middle" font-size="11" font-weight="600" fill="#76b900">Nemotron-3-Super</text>
+
+  <rect x="860" y="210" width="200" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="233" text-anchor="middle" font-size="11" font-weight="600" fill="#ea4335">Official Sources</text>
+
+  <rect x="860" y="255" width="200" height="36" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="278" text-anchor="middle" font-size="11" font-weight="600" fill="#ff6d01">Chat History</text>
+
+  <rect x="860" y="335" width="200" height="110" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="358" text-anchor="middle" font-size="11" font-weight="600" fill="#5f6368">Frontend Features</text>
+  <text x="960" y="378" text-anchor="middle" font-size="9" fill="#666">• 6 Language UI (Noto Sans)</text>
+  <text x="960" y="393" text-anchor="middle" font-size="9" fill="#666">• Dark Mode (CSS vars)</text>
+  <text x="960" y="408" text-anchor="middle" font-size="9" fill="#666">• Voice Input (mic)</text>
+  <text x="960" y="423" text-anchor="middle" font-size="9" fill="#666">• PDF Export</text>
+  <text x="960" y="438" text-anchor="middle" font-size="9" fill="#666">• Scheme Comparison</text>
+
+  <rect x="860" y="455" width="200" height="55" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="478" text-anchor="middle" font-size="11" font-weight="600" fill="#5f6368">Safety Features</text>
+  <text x="960" y="495" text-anchor="middle" font-size="9" fill="#666">• Confidence indicators</text>
+  <text x="960" y="508" text-anchor="middle" font-size="9" fill="#666">• Disclaimers + CSC fallback</text>
+
+  <!-- Flow labels -->
+  <text x="550" y="310" text-anchor="middle" font-size="12" font-weight="600" fill="#5f6368">RAG Flow</text>
+
+  <!-- Admin box -->
+  <rect x="860" y="580" width="200" height="70" rx="8" fill="white" filter="url(#shadow)"/>
+  <text x="960" y="603" text-anchor="middle" font-size="11" font-weight="600" fill="#5f6368">Admin</text>
+  <text x="960" y="620" text-anchor="middle" font-size="9" fill="#666">• POST /api/admin/refresh</text>
+  <text x="960" y="637" text-anchor="middle" font-size="9" fill="#666">• Cache invalidation</text>
+  <text x="960" y="650" text-anchor="middle" font-size="9" fill="#666">• Re-index ChromaDB</text>
+
+</svg>

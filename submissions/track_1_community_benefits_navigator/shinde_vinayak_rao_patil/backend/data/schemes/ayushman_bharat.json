@@ -36,6 +36,11 @@
       "Mobile phone number"
     ]
   },
+  "eligibility_rules": [
+    {"field": "annual_income", "op": "lt", "value": 250000, "fail_msg": "Family income likely exceeds Ayushman Bharat threshold (₹2.5L/year)"},
+    {"field": "occupation", "op": "not_in", "value": ["doctor", "engineer", "lawyer", "chartered accountant", "government"], "fail_msg": "Professional/government employees may not be eligible"}
+  ],
+  "confidence_scoring": {"base": 0.7, "penalty": 0.2, "brackets": [{"max_income": 250000, "value": 0.7}, {"max_income": 500000, "value": 0.3}], "min": 0.1},
   "application_process": {
     "how_to_apply": [
       "Check eligibility by sending PMJAY to 56677 or visiting pmjay.gov.in",

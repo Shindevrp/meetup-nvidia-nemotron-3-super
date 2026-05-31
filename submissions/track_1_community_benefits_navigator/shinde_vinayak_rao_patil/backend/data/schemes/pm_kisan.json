@@ -33,6 +33,12 @@
       "Mobile phone number linked to Aadhaar"
     ]
   },
+  "eligibility_rules": [
+    {"field": "occupation", "op": "in_optional", "value": ["farmer", "agriculture"], "fail_msg": "PM-KISAN is for farmers with landholding"},
+    {"field": "landowner", "op": "eq", "value": true, "fail_msg": "Must own cultivable land"},
+    {"field": "annual_income", "op": "gt", "value": 0, "only_if": {"occupation": {"op": "not_in", "value": ["farmer", "agriculture"]}}, "fail_msg": "IT payers/professionals may not be eligible"}
+  ],
+  "confidence_scoring": {"base": 0.8, "penalty": 0.25, "min": 0.1},
   "application_process": {
     "how_to_apply": "The scheme is centrally administered but state governments identify and register beneficiaries based on land records. Farmers do not need to individually apply in most cases — names are automatically included if land records are updated.",
     "if_not_included": [
