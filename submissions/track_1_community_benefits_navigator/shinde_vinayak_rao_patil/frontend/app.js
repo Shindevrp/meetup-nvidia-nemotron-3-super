@@ -533,6 +533,10 @@ async function sendMessage() {
     removeTyping();
     addMessage(data.reply, 'bot', data.citations, data.confidence, true);
 
+    if (data.suggested_questions && data.suggested_questions.length > 0) {
+      displaySuggestedQuestions(data.suggested_questions);
+    }
+
     chatHistory.push({ role: 'user', content: msg, timestamp: Date.now() });
     chatHistory.push({ role: 'assistant', content: data.reply, timestamp: Date.now(), confidence: data.confidence });
 
@@ -582,6 +586,27 @@ function addMessage(text, role, citations, confidence, shouldPersist) {
   div.innerHTML = html;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
+}
+
+function displaySuggestedQuestions(questions) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'message bot suggested-questions';
+  let html = '<div class="bubble"><div class="sq-label">You might also ask:</div><div class="sq-chips">';
+  questions.forEach(q => {
+    html += `<button class="sq-chip" onclick="askSuggested('${encodeURIComponent(q)}')">${escHtml(q)}</button>`;
+  });
+  html += '</div></div>';
+  div.innerHTML = html;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function askSuggested(encoded) {
+  const question = decodeURIComponent(encoded);
+  document.getElementById('chat-input').value = question;
+  autoResize(document.getElementById('chat-input'));
+  sendMessage();
 }
 
 function formatText(text) {
@@ -707,6 +732,7 @@ async function checkEligibility(event) {
 
     html += '</div>';
     html += '<div class="disclaimer" style="margin-top:12px">Note: This is an estimate based on limited information. Visit official portals for confirmation.</div>';
+    html += `<button class="btn-primary" style="margin-top:16px" onclick="explainEligibility()">Explain with AI</button>`;
     resultsDiv.innerHTML = html;
     resultsDiv.scrollIntoView({ behavior: 'smooth' });
   } catch (err) {
@@ -714,6 +740,52 @@ async function checkEligibility(event) {
   } finally {
     btn.disabled = false;
     btn.textContent = 'Check Eligibility';
+  }
+}
+
+async function explainEligibility() {
+  const profile = contextMemory.userProfile;
+  const results = contextMemory.eligibilityResults;
+  if (!results || !results.length) return;
+
+  const explainDiv = document.getElementById('eligibility-explanation');
+  explainDiv.classList.remove('hidden');
+  explainDiv.innerHTML = '<div class="loading-spinner"></div><p>Generating AI explanation...</p>';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/eligibility/explain`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profile,
+        results: results.map(r => ({
+          scheme_id: r.scheme_id,
+          name: r.name,
+          confidence: r.confidence,
+          match: r.match,
+          reasons: [],
+        })),
+        language: currentLang,
+      }),
+    });
+    const data = await res.json();
+    let html = '<div class="explain-panel">';
+    html += '<h3>AI Recommendation</h3>';
+    html += `<p>${formatText(data.explanation || '')}</p>`;
+    if (data.best_scheme) {
+      html += `<div class="best-scheme"><strong>Best Scheme:</strong> ${data.best_scheme}</div>`;
+    }
+    if (data.next_steps && data.next_steps.length) {
+      html += '<h4>Next Steps</h4><ul>' + data.next_steps.map(s => `<li>${escHtml(s)}</li>`).join('') + '</ul>';
+    }
+    if (data.improvement_tips && data.improvement_tips.length) {
+      html += '<h4>Improvement Tips</h4><ul>' + data.improvement_tips.map(t => `<li>${escHtml(t)}</li>`).join('') + '</ul>';
+    }
+    html += '</div>';
+    explainDiv.innerHTML = html;
+    explainDiv.scrollIntoView({ behavior: 'smooth' });
+  } catch (err) {
+    explainDiv.innerHTML = '<p class="error-text">Error generating AI explanation.</p>';
   }
 }
 
@@ -926,6 +998,42 @@ function initCSCMap() {
   });
 
   document.getElementById('csc-results').innerHTML = `<p>Showing ${defaultCSCs.length} major CSC locations. Zoom in or search for your city.</p>`;
+}
+
+async function aiCompareSchemes() {
+  const idA = document.getElementById('compare-a').value;
+  const idB = document.getElementById('compare-b').value;
+  const resultDiv = document.getElementById('compare-ai-result');
+
+  if (!idA || !idB) { alert('Please select two schemes.'); return; }
+  if (idA === idB) { alert('Please select two different schemes.'); return; }
+
+  resultDiv.classList.remove('hidden');
+  resultDiv.innerHTML = '<div class="loading-spinner"></div><p>Generating AI comparison...</p>';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/eligibility/compare`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scheme_a_id: idA, scheme_b_id: idB, language: currentLang }),
+    });
+    const data = await res.json();
+    let html = '<div class="explain-panel">';
+    html += '<h3>AI Comparison</h3>';
+    html += `<p>${formatText(data.overall_comparison || '')}</p>`;
+    if (data.differences && data.differences.length) {
+      html += '<h4>Key Differences</h4><ul>' + data.differences.map(d => `<li>${escHtml(d)}</li>`).join('') + '</ul>';
+    }
+    if (data.recommendation) {
+      html += `<div class="best-scheme"><strong>Recommendation:</strong> ${formatText(data.recommendation)}</div>`;
+    }
+    html += `<p style="margin-top:8px"><strong>Can apply to both?</strong> ${data.can_apply_both ? 'Yes' : 'No'}</p>`;
+    html += '</div>';
+    resultDiv.innerHTML = html;
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+  } catch (err) {
+    resultDiv.innerHTML = '<p class="error-text">Error generating AI comparison.</p>';
+  }
 }
 
 async function searchCSC() {

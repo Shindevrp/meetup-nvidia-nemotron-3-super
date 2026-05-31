@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
@@ -35,6 +36,326 @@ _GREETING_PATTERN = re.compile(
     r"^(hi|hello|hey|namaste|नमस्ते|हाय|నమస్కారం|வணக்கம்|নমস্কার|नमस्कार|thanks|thank you|bye|goodbye|what can you do|help)$",
     re.IGNORECASE,
 )
+
+_BROAD_QUERY_PATTERN = re.compile(
+    r"(what|which|all|any|every|list|show|tell).*(scheme|benefit|eligible|welfare|yojana|apply)",
+    re.IGNORECASE,
+)
+
+
+def _call_llm(
+    messages: List[dict],
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+    temperature: float = 0.7,
+    max_tokens: int = 2048,
+    response_format: Optional[dict] = None,
+) -> dict:
+    body = {
+        "model": model_name,
+        "messages": messages,
+        "temperature": temperature,
+        "top_p": 0.95,
+        "max_tokens": max_tokens,
+    }
+    if response_format:
+        body["response_format"] = response_format
+    return {
+        "model": model_name,
+        "messages": messages,
+        "temperature": temperature,
+        "top_p": 0.95,
+        "max_tokens": max_tokens,
+        **(response_format or {}),
+    }
+
+
+async def _llm_completion(
+    messages: List[dict],
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+    temperature: float = 0.7,
+    max_tokens: int = 2048,
+    response_format: Optional[dict] = None,
+) -> str:
+    body = {
+        "model": model_name,
+        "messages": messages,
+        "temperature": temperature,
+        "top_p": 0.95,
+        "max_tokens": max_tokens,
+    }
+    if response_format:
+        body["response_format"] = response_format
+
+    resp = await httpx_client.post(
+        f"{api_url}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": app_url,
+            "X-Title": app_title,
+        },
+        json=body,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    return data["choices"][0]["message"]["content"]
+
+
+async def decompose_query(
+    message: str,
+    language: str,
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+) -> List[str]:
+    lang_instr = LANG_INSTRUCTIONS.get(language, LANG_INSTRUCTIONS["english"])
+    prompt = (
+        f"{lang_instr}\n\n"
+        "The user is asking about Indian government welfare schemes. "
+        "If their question is broad (covers multiple schemes or asks 'which schemes am I eligible for'), "
+        "break it into 2-4 specific sub-questions that can each be answered from a single scheme document. "
+        "If the question is already specific, return only the original question.\n\n"
+        "Return a JSON array of strings. Example: "
+        '["What is the income limit for PM-KISAN?", "What are the eligibility criteria for Ayushman Bharat?"]\n\n'
+        f"User question: {message}"
+    )
+    try:
+        result = await _llm_completion(
+            messages=[{"role": "user", "content": prompt}],
+            httpx_client=httpx_client,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            app_url=app_url,
+            app_title=app_title,
+            max_tokens=512,
+            response_format={"type": "json_object"},
+        )
+        questions = json.loads(result)
+        if isinstance(questions, list) and len(questions) > 0:
+            return questions
+    except Exception:
+        pass
+    return [message]
+
+
+async def summarize_history(
+    history: List[dict],
+    language: str,
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+) -> str:
+    lang_instr = LANG_INSTRUCTIONS.get(language, LANG_INSTRUCTIONS["english"])
+    transcript = "\n".join(
+        f"{'User' if m['role'] == 'user' else 'Assistant'}: {m['content'][:200]}"
+        for m in history
+    )
+    prompt = (
+        f"{lang_instr}\n\n"
+        "Summarize the following conversation about Indian government welfare schemes. "
+        "Include: which schemes were discussed, what eligibility questions were asked, "
+        "and what information was provided. Keep it under 100 words.\n\n"
+        f"CONVERSATION:\n{transcript}\n\nSUMMARY:"
+    )
+    try:
+        return await _llm_completion(
+            messages=[{"role": "user", "content": prompt}],
+            httpx_client=httpx_client,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            app_url=app_url,
+            app_title=app_title,
+            max_tokens=300,
+            temperature=0.5,
+        )
+    except Exception:
+        return ""
+
+
+async def generate_followup_questions(
+    message: str,
+    reply: str,
+    language: str,
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+) -> List[str]:
+    lang_instr = LANG_INSTRUCTIONS.get(language, LANG_INSTRUCTIONS["english"])
+    prompt = (
+        f"{lang_instr}\n\n"
+        "Based on the following conversation about Indian government welfare schemes, "
+        "suggest 3 relevant follow-up questions the user might want to ask next. "
+        "Return a JSON array of strings.\n\n"
+        f'User: {message}\nAssistant: {reply}\n\n'
+        '["question 1?", "question 2?", "question 3?"]'
+    )
+    try:
+        result = await _llm_completion(
+            messages=[{"role": "user", "content": prompt}],
+            httpx_client=httpx_client,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            app_url=app_url,
+            app_title=app_title,
+            max_tokens=512,
+            response_format={"type": "json_object"},
+        )
+        questions = json.loads(result)
+        if isinstance(questions, list) and len(questions) > 0:
+            return questions[:3]
+    except Exception:
+        pass
+    return []
+
+
+async def explain_eligibility(
+    profile: dict,
+    results: List[dict],
+    scheme_details: dict,
+    language: str,
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+) -> dict:
+    lang_instr = LANG_INSTRUCTIONS.get(language, LANG_INSTRUCTIONS["english"])
+    profile_str = "\n".join(f"  {k}: {v}" for k, v in profile.items() if v is not None and v != "" and v is not False)
+    results_str = ""
+    for r in results:
+        detail = scheme_details.get(r["scheme_id"], {})
+        results_str += (
+            f"\n- {r['name']} (id: {r['scheme_id']})\n"
+            f"  Match: {'YES' if r['match'] else 'NO'} (confidence: {r['confidence']})\n"
+            f"  Ministry: {detail.get('ministry', 'N/A')}\n"
+            f"  Summary: {detail.get('summary', 'N/A')[:200]}\n"
+            f"  Benefits: {'; '.join(detail.get('benefits', [])[:3])}\n"
+            f"  Reasons: {'; '.join(r['reasons']) if r['reasons'] else 'All criteria met'}\n"
+        )
+
+    prompt = (
+        f"{lang_instr}\n\n"
+        "You are an expert on Indian government welfare schemes. "
+        "Based on the user's profile and the eligibility results, generate:\n"
+        "1. A personalized plain-language explanation of which schemes they qualify for and why\n"
+        "2. For matched schemes: what benefits they can expect and next steps to apply\n"
+        "3. For unmatched schemes: what specific criteria they don't meet and whether they might qualify in future\n"
+        "4. An overall recommendation on the best scheme to apply for first\n\n"
+        f"USER PROFILE:\n{profile_str}\n\n"
+        f"ELIGIBILITY RESULTS:\n{results_str}\n\n"
+        "Return a JSON object with keys: "
+        '"explanation" (string, 3-5 sentences), '
+        '"best_scheme" (string, scheme name), '
+        '"next_steps" (array of strings, 3 items), '
+        '"improvement_tips" (array of strings, 2-3 items if any schemes were not matched).'
+    )
+    try:
+        result = await _llm_completion(
+            messages=[{"role": "user", "content": prompt}],
+            httpx_client=httpx_client,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            app_url=app_url,
+            app_title=app_title,
+            max_tokens=1024,
+            response_format={"type": "json_object"},
+        )
+        return json.loads(result)
+    except Exception as e:
+        return {
+            "explanation": f"Analysis available. You matched {len([r for r in results if r['match']])} out of {len(results)} schemes.",
+            "best_scheme": "",
+            "next_steps": ["Review the eligibility results above", "Visit the scheme portal for details", "Contact your nearest CSC for assistance"],
+            "improvement_tips": [],
+        }
+
+
+async def compare_schemes_llm(
+    scheme_a: dict,
+    scheme_b: dict,
+    language: str,
+    httpx_client: httpx.AsyncClient,
+    api_key: str,
+    api_url: str,
+    model_name: str,
+    app_url: str,
+    app_title: str,
+) -> dict:
+    lang_instr = LANG_INSTRUCTIONS.get(language, LANG_INSTRUCTIONS["english"])
+
+    def fmt(s):
+        return (
+            f"Name: {s.get('name', 'N/A')}\n"
+            f"Ministry: {s.get('ministry', 'N/A')}\n"
+            f"Type: {s.get('type', 'N/A')}\n"
+            f"Summary: {s.get('summary', 'N/A')}\n"
+            f"Benefits: {'; '.join(s.get('benefits', []))}\n"
+            f"Who Can Apply: {'; '.join((s.get('eligibility') or {}).get('who_can_apply', []))}\n"
+            f"Documents: {'; '.join((s.get('eligibility') or {}).get('documents_required', []))}\n"
+            f"Portal: {((s.get('application_process') or {}).get('portal_url', 'N/A'))}\n"
+            f"Helpline: {((s.get('application_process') or {}).get('helpline', 'N/A'))}\n"
+        )
+
+    prompt = (
+        f"{lang_instr}\n\n"
+        "Compare the following two Indian government welfare schemes. "
+        "Focus on: who would benefit most from each, key differences in eligibility, "
+        "benefit amounts, and application process.\n\n"
+        f"SCHEME A:\n{fmt(scheme_a)}\n\n"
+        f"SCHEME B:\n{fmt(scheme_b)}\n\n"
+        "Return a JSON object with keys: "
+        '"overall_comparison" (string, 3-4 sentences), '
+        '"differences" (array of strings, 3-5 key differences), '
+        '"recommendation" (string, 2-3 sentences on who should choose which), '
+        '"can_apply_both" (boolean, whether a citizen can potentially apply to both).'
+    )
+    try:
+        result = await _llm_completion(
+            messages=[{"role": "user", "content": prompt}],
+            httpx_client=httpx_client,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            app_url=app_url,
+            app_title=app_title,
+            max_tokens=1024,
+            response_format={"type": "json_object"},
+        )
+        return json.loads(result)
+    except Exception:
+        return {
+            "overall_comparison": "Comparison not available at this time.",
+            "differences": [],
+            "recommendation": "See the detailed table below for a side-by-side comparison.",
+            "can_apply_both": False,
+        }
+
+
+# --- Eligibility Rule Engine (unchanged) ---
 
 
 def _evaluate_op(profile: dict, field: str, op: str, value: Any) -> bool:
@@ -104,6 +425,9 @@ def _compute_confidence(scoring: dict, profile: dict, reason_count: int) -> floa
 
     score = base - (reason_count * penalty)
     return max(score, min_val)
+
+
+# --- Public API ---
 
 
 def get_available_schemes() -> dict:
@@ -207,6 +531,10 @@ def is_greeting(message: str) -> bool:
     return bool(_GREETING_PATTERN.match(message.strip().rstrip(".!?")))
 
 
+def is_broad_query(message: str) -> bool:
+    return bool(_BROAD_QUERY_PATTERN.search(message))
+
+
 _GREETING_REPLIES = {
     "english": (
         "Namaste! I'm your Community Benefits Navigator. I can help you:\n\n"
@@ -278,14 +606,58 @@ async def chat_with_nemotron(
         history = []
 
     if is_greeting(message):
-        return {"reply": get_greeting_reply(language), "citations": [], "confidence": 1.0}
+        return {"reply": get_greeting_reply(language), "citations": [], "confidence": 1.0, "suggested_questions": []}
 
     from rag.retriever import retrieve, format_context
 
-    retrieved = retrieve(message)
-    context = format_context(retrieved)
+    # --- Query Decomposition ---
+    sub_queries = [message]
+    if is_broad_query(message) and api_key:
+        try:
+            sub_queries = await decompose_query(
+                message=message,
+                language=language,
+                httpx_client=httpx_client,
+                api_key=api_key,
+                api_url=api_url,
+                model_name=model_name,
+                app_url=app_url,
+                app_title=app_title,
+            )
+        except Exception:
+            sub_queries = [message]
+
+    # --- Multi-query retrieval ---
+    all_retrieved = []
+    seen_chunks = set()
+    for q in sub_queries:
+        retrieved = retrieve(q)
+        for doc, meta, score in retrieved:
+            chunk_key = doc[:100]
+            if chunk_key not in seen_chunks:
+                seen_chunks.add(chunk_key)
+                all_retrieved.append((doc, meta, score))
+    all_retrieved.sort(key=lambda x: x[2], reverse=True)
+    context = format_context(all_retrieved[:10])
 
     lang_instruction = LANG_INSTRUCTIONS.get(language, LANG_INSTRUCTIONS["english"])
+
+    # --- Session Summarization ---
+    session_summary = ""
+    if len(history) > 6 and api_key:
+        try:
+            session_summary = await summarize_history(
+                history=history[:-4],
+                language=language,
+                httpx_client=httpx_client,
+                api_key=api_key,
+                api_url=api_url,
+                model_name=model_name,
+                app_url=app_url,
+                app_title=app_title,
+            )
+        except Exception:
+            pass
 
     system_prompt = (
         "You are a Community Benefits Navigator for Indian government schemes.\n\n"
@@ -296,13 +668,19 @@ async def chat_with_nemotron(
         "3. If the context doesn't contain the answer, say \"I don't have reliable information on this\" and suggest visiting the official portal or nearest Common Service Centre (CSC).\n"
         "4. Be helpful and concise. Use simple language that a person with basic literacy can understand.\n"
         "5. Format complex information as bullet points or numbered steps.\n"
-        "6. Always end with: \"For official confirmation, please visit the scheme portal or your nearest CSC.\"\n\n"
+        "6. Always end with: \"For official confirmation, please visit the scheme portal or your nearest CSC.\"\n"
+        "7. At the very end of your response, rate your confidence in this answer from 0.0 to 1.0 "
+        "as a JSON object on its own line like: {\"confidence\": 0.85}\n"
+        "8. Before your closing, suggest 3 follow-up questions the user might want to ask next. "
+        "Put them in a bullet list under \"You might also ask:\"\n\n"
         f"CONTEXT:\n{context}\n"
     )
 
     messages = [{"role": "system", "content": system_prompt}]
+    if session_summary:
+        messages.append({"role": "system", "content": f"Earlier conversation summary: {session_summary}"})
     for h in history[-6:]:
-        messages.append({"role": h["role"], "content": h["content"]})
+        messages.append({"role": h["role"], "content": h["content"][:1000]})
     messages.append({"role": "user", "content": message})
 
     if not api_key:
@@ -310,6 +688,7 @@ async def chat_with_nemotron(
             "reply": "API key not configured. Set API_KEY in backend/.env (get one from https://openrouter.ai/keys)",
             "citations": [],
             "confidence": 0.0,
+            "suggested_questions": [],
         }
 
     should_close = False
@@ -318,31 +697,46 @@ async def chat_with_nemotron(
         should_close = True
 
     try:
-        resp = await httpx_client.post(
-            f"{api_url}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-                "HTTP-Referer": app_url,
-                "X-Title": app_title,
-            },
-            json={
-                "model": model_name,
-                "messages": messages,
-                "temperature": 1.0,
-                "top_p": 0.95,
-                "max_tokens": 1024,
-            },
+        reply = await _llm_completion(
+            messages=messages,
+            httpx_client=httpx_client,
+            api_key=api_key,
+            api_url=api_url,
+            model_name=model_name,
+            app_url=app_url,
+            app_title=app_title,
+            temperature=0.7,
+            max_tokens=2048,
         )
-        resp.raise_for_status()
-        data = resp.json()
-        reply = data["choices"][0]["message"]["content"]
     finally:
         if should_close:
             await httpx_client.aclose()
 
+    # --- Extract confidence from reply ---
+    llm_confidence = None
+    clean_reply = reply
+    conf_match = re.search(r'\{[^{}]*"confidence"\s*:\s*([0-9.]+)[^{}]*\}', reply)
+    if conf_match:
+        try:
+            llm_confidence = float(conf_match.group(1))
+            clean_reply = reply[:conf_match.start()].rstrip()
+        except (ValueError, IndexError):
+            pass
+
+    # --- Extract follow-up questions from reply ---
+    suggested_questions = []
+    fq_match = re.search(r"You might also ask:\n((?:.*\n)*)", reply)
+    if fq_match:
+        questions_text = fq_match.group(1)
+        suggested_questions = [
+            q.strip().lstrip("- ").lstrip('"').rstrip('"')
+            for q in questions_text.strip().split("\n")
+            if q.strip()
+        ][:3]
+        clean_reply = reply[:fq_match.start()].rstrip()
+
     citations = []
-    for doc, meta, score in retrieved:
+    for doc, meta, score in all_retrieved[:10]:
         if score > 0.3:
             citations.append({
                 "scheme": meta["name"],
@@ -352,9 +746,11 @@ async def chat_with_nemotron(
             })
 
     avg_confidence = round(sum(c["confidence"] for c in citations) / max(len(citations), 1), 2)
+    final_confidence = llm_confidence if llm_confidence is not None else avg_confidence
 
     return {
-        "reply": reply,
+        "reply": clean_reply,
         "citations": citations[:3],
-        "confidence": avg_confidence,
+        "confidence": final_confidence,
+        "suggested_questions": suggested_questions,
     }

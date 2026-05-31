@@ -131,6 +131,7 @@
             <button type="submit" class="btn-primary" id="eligibility-btn">Check Eligibility</button>
           </form>
           <div id="eligibility-results" class="hidden"></div>
+          <div id="eligibility-explanation" class="hidden"></div>
         </div>
       </section>
 
@@ -157,8 +158,12 @@
               <select id="compare-b"></select>
             </div>
           </div>
-          <button class="btn-primary" onclick="compareSchemes()">Compare</button>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn-primary" style="flex:1" onclick="compareSchemes()">Compare</button>
+            <button class="btn-primary" style="flex:1" onclick="aiCompareSchemes()">AI Compare</button>
+          </div>
           <div id="compare-results" class="hidden"></div>
+          <div id="compare-ai-result" class="hidden"></div>
         </div>
       </section>
 

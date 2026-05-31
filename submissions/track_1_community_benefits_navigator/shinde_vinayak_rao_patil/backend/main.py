@@ -203,6 +203,8 @@ session_store = SessionStore()
 from models.chat import (
     chat_with_nemotron,
     check_eligibility,
+    explain_eligibility,
+    compare_schemes_llm,
     get_available_schemes,
     get_scheme_detail,
 )
@@ -276,6 +278,7 @@ class ChatResponse(BaseModel):
     reply: str = Field(..., description="AI-generated response")
     citations: list = Field(..., description="Source citations with confidence scores")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Overall confidence score")
+    suggested_questions: list = Field(default=[], description="Suggested follow-up questions")
 
 
 class EligibilityProfile(BaseModel):
@@ -314,6 +317,18 @@ class SessionMessage(BaseModel):
 
 class SessionRename(BaseModel):
     title: str = Field(..., min_length=1, max_length=200, description="New session title")
+
+
+class ExplainEligibilityRequest(BaseModel):
+    profile: EligibilityProfile = Field(..., description="User profile")
+    results: List[EligibilityResult] = Field(..., description="Eligibility check results")
+    language: str = Field(default="english", pattern="^(english|hindi|telugu|tamil|bengali|marathi)$", description="Response language")
+
+
+class CompareSchemesRequest(BaseModel):
+    scheme_a_id: str = Field(..., min_length=1, description="First scheme ID")
+    scheme_b_id: str = Field(..., min_length=1, description="Second scheme ID")
+    language: str = Field(default="english", pattern="^(english|hindi|telugu|tamil|bengali|marathi)$", description="Response language")
 
 
 class RefreshResponse(BaseModel):
@@ -449,6 +464,56 @@ async def eligibility(profile: EligibilityProfile):
             for r in results
         ])
     return results
+
+
+@app.post("/api/eligibility/explain", tags=["Eligibility"], summary="Get LLM explanation of eligibility results")
+async def eligibility_explain(req: ExplainEligibilityRequest, request: Request):
+    """Generates a personalized plain-language explanation of eligibility results,
+    including best scheme recommendation, next steps, and improvement tips."""
+    scheme_details = {}
+    for r in req.results:
+        detail = get_scheme_detail(r.scheme_id)
+        if detail:
+            scheme_details[r.scheme_id] = detail
+
+    result = await explain_eligibility(
+        profile=req.profile.model_dump(),
+        results=[r.model_dump() for r in req.results],
+        scheme_details=scheme_details,
+        language=req.language,
+        httpx_client=request.app.state.httpx_client,
+        api_key=Config.API_KEY,
+        api_url=Config.API_URL,
+        model_name=Config.MODEL_NAME,
+        app_url=Config.APP_URL,
+        app_title=Config.APP_TITLE,
+    )
+    return result
+
+
+@app.post("/api/eligibility/compare", tags=["Eligibility"], summary="Compare two schemes side-by-side")
+async def eligibility_compare(req: CompareSchemesRequest, request: Request):
+    """Compares two welfare schemes using LLM, highlighting differences in eligibility,
+    benefits, and application process."""
+    scheme_a = get_scheme_detail(req.scheme_a_id)
+    if not scheme_a:
+        raise HTTPException(status_code=404, detail=f"Scheme '{req.scheme_a_id}' not found")
+    scheme_b = get_scheme_detail(req.scheme_b_id)
+    if not scheme_b:
+        raise HTTPException(status_code=404, detail=f"Scheme '{req.scheme_b_id}' not found")
+
+    result = await compare_schemes_llm(
+        scheme_a=scheme_a,
+        scheme_b=scheme_b,
+        language=req.language,
+        httpx_client=request.app.state.httpx_client,
+        api_key=Config.API_KEY,
+        api_url=Config.API_URL,
+        model_name=Config.MODEL_NAME,
+        app_url=Config.APP_URL,
+        app_title=Config.APP_TITLE,
+    )
+    return result
 
 
 @app.post("/api/admin/refresh", tags=["Admin"], summary="Refresh scheme cache and re-index ChromaDB")
