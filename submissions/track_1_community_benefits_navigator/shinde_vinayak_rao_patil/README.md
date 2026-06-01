@@ -16,6 +16,35 @@
 
 ---
 
+### Why Nemotron-3-Super?
+
+This project required a model that could handle **multiple reasoning tasks** from a single API, run within **free-tier constraints**, and support **6 Indian languages natively**. Nemotron-3-Super was selected over alternatives for the following reasons:
+
+| Requirement | Nemotron-3-Super | GPT-4o / Claude 3 | Gemma 2 / Llama 3 |
+|---|---|---|---|
+| **Free tier available** | Yes (OpenRouter) | Limited / paid | Free (self-host) |
+| **MoE efficiency (12B active / 120B total)** | Yes — 10x cheaper inference | Dense models (full cost) | Dense models (full cost) |
+| **1M token context window** | Yes — session summarization without overflow | 128K-200K | 8K-32K |
+| **Structured JSON output** | Reliable with prompt engineering | Strong | Moderate |
+| **Multilingual (6 Indian languages)** | Strong — trained on multilingual data | Strong | Varies by model |
+| **Query decomposition** | Handles multi-step reasoning well | Strong | Moderate |
+| **Self-rated confidence extraction** | Works via regex-parsed output |  via function calling |  via function calling |
+| **No GPU required** | Yes (API-only) | Yes (API-only) | Requires GPU for self-host |
+
+**Key architectural advantages of Nemotron-3-Super for this use case:**
+
+1. **Hybrid Mamba-Transformer MoE** — The model interleaves Mamba state-space layers with Transformer attention layers, routing each token through only 12B of its 120B parameters. This means we get 120B-level reasoning quality at 12B-level inference cost — critical for staying within OpenRouter's free-tier token limits while handling complex eligibility reasoning.
+
+2. **1M token context window** — Session summarization (triggered after 8 chat turns) compresses conversation history into a concise summary that fits well within this window, even across very long sessions. Alternative models with smaller context windows would lose earlier context or require more aggressive truncation.
+
+3. **Multilingual training** — Unlike models that need separate translation steps, Nemotron-3-Super was trained on multilingual data covering Hindi, Telugu, Tamil, Bengali, and Marathi. This allows the system to provide grounded, language-appropriate responses without an intermediate translation layer that could introduce errors.
+
+4. **Structured output without fine-tuning** — Through careful prompt engineering, the model consistently outputs structured JSON for eligibility explanations and scheme comparisons. This avoids the need for fine-tuning separate models for each function — the same model handles 6 distinct roles.
+
+These characteristics made Nemotron-3-Super the only model that could deliver all required capabilities (multi-step reasoning, multilingual support, structured output, free-tier cost) in a single API integration.
+
+---
+
 ### Project Links
 - **YouTube Demo:** https://drive.google.com/file/d/1EOJBqOfedNXyRIfe9ixPwdkRdaK6oaiQ/view?usp=drive_link
 - **Blog Post:** https://medium.com/@shindevinayakraopatil/nemotron-3-super-as-a-multi-tool-how-one-120b-moe-model-handles-rag-query-decomposition-cec551935346
