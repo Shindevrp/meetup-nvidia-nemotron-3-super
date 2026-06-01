@@ -7,7 +7,7 @@ import time
 import uuid
 from collections import defaultdict
 from contextlib import asynccontextmanager
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 import httpx
 from dotenv import load_dotenv
@@ -16,6 +16,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+from models.chat import (
+    chat_with_nemotron,
+    check_eligibility,
+    explain_eligibility,
+    compare_schemes_llm,
+    get_available_schemes,
+    get_scheme_detail,
+)
+from models.schemes import clear_schemes_cache, reload_schemes
+from rag.retriever import clear_retrieve_cache
+from rag.loader import load_and_index
 
 load_dotenv()
 
@@ -189,36 +201,26 @@ class SessionStore:
         if session.get("profile"):
             p = session["profile"]
             bits = []
-            if p.get("age"): bits.append(f"age {p['age']}")
-            if p.get("annual_income"): bits.append(f"annual income ₹{p['annual_income']}")
-            if p.get("occupation"): bits.append(f"occupation: {p['occupation']}")
-            if p.get("gender"): bits.append(f"gender: {p['gender']}")
-            if bits: parts.append(f"User profile: {', '.join(bits)}.")
+            if p.get("age"):
+                bits.append(f"age {p['age']}")
+            if p.get("annual_income"):
+                bits.append(f"annual income ₹{p['annual_income']}")
+            if p.get("occupation"):
+                bits.append(f"occupation: {p['occupation']}")
+            if p.get("gender"):
+                bits.append(f"gender: {p['gender']}")
+            if bits:
+                parts.append(f"User profile: {', '.join(bits)}.")
         return " ".join(parts)
 
 
 session_store = SessionStore()
-
-
-from models.chat import (
-    chat_with_nemotron,
-    check_eligibility,
-    explain_eligibility,
-    compare_schemes_llm,
-    get_available_schemes,
-    get_scheme_detail,
-)
-from models.schemes import clear_schemes_cache, reload_schemes
-from rag.retriever import clear_retrieve_cache
-from rag.embedder import delete_and_reindex
-from rag.loader import load_and_index
 
 INDEXED_FLAG = os.path.join(os.path.dirname(__file__), ".indexed")
 SCHEMES_DIR = os.path.join(os.path.dirname(__file__), "data", "schemes")
 
 
 def _reindex_all():
-    import shutil
     clear_schemes_cache()
     clear_retrieve_cache()
     if os.path.exists(INDEXED_FLAG):

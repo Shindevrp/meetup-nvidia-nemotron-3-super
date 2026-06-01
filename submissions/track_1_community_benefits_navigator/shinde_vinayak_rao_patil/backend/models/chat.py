@@ -3,12 +3,11 @@ from __future__ import annotations
 import json
 import os
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import httpx
 
 from models.schemes import (
-    Scheme,
     get_schemes_cache,
 )
 
@@ -285,7 +284,7 @@ async def explain_eligibility(
             response_format={"type": "json_object"},
         )
         return json.loads(result)
-    except Exception as e:
+    except Exception:
         return {
             "explanation": f"Analysis available. You matched {len([r for r in results if r['match']])} out of {len(results)} schemes.",
             "best_scheme": "",

@@ -172,6 +172,85 @@ cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 ---
 
+### FAQ
+
+**Q: Why Nemotron-3-Super instead of a smaller model?**
+A: The 120B MoE architecture provides strong multi-step reasoning with only 12B active parameters per token. This enables query decomposition, session summarization, and structured JSON output — all within the OpenRouter free tier. Smaller models struggled with consistent structured output across 6 languages.
+
+**Q: How accurate are the responses?**
+A: Every answer is grounded in retrieved scheme documents from ChromaDB. The LLM is instructed to refuse ungrounded queries. Responses include confidence-badged citations and a self-rated confidence score. Grounding is enforced at the prompt level.
+
+**Q: Can I add a new scheme without writing code?**
+A: Yes. Create a JSON file in `backend/data/schemes/` with the scheme's data, eligibility rules, and confidence scoring. The rule engine reads it automatically. See [CONTRIBUTING.md](CONTRIBUTING.md) for the template.
+
+**Q: What happens if the OpenRouter API is unavailable?**
+A: The system returns a clear error message and suggests visiting the nearest CSC centre. Rate limiting (30 req/min) prevents abuse. The free tier has daily token caps — monitor usage at openrouter.ai/activity.
+
+**Q: How are languages handled for non-English queries?**
+A: The LLM receives a language instruction in the system prompt (e.g., "Respond in Telugu"). Greeting replies are pre-translated for all 6 languages. The UI translates all interface strings via a JavaScript key-value map. Voice input uses language-aware SpeechRecognition.
+
+**Q: Can I run this without internet access?**
+A: No. The system requires internet for OpenRouter API (LLM), Google Fonts (Noto Sans), OpenStreetMap (CSC Locator), and Hugging Face (embedding model download on first run).
+
+**Q: How does session summarization prevent context overflow?**
+A: After 8 chat turns, the conversation history is sent to the LLM for automatic summarization. The summary replaces raw history in subsequent requests, keeping context relevant while staying within token limits.
+
+---
+
+### Testing & Validation
+
+```bash
+# Install dev dependencies
+pip install pytest pytest-asyncio httpx
+
+# Run tests
+pytest backend/tests/ -v
+```
+
+**Test coverage areas (future):**
+- Eligibility rule evaluation (each operator, conditional rules, edge cases)
+- RAG retrieval (multi-query decomposition, merge-dedup, cache hits)
+- LLM integration (structured JSON parsing, confidence extraction)
+- API endpoints (chat, eligibility, explain, compare, sessions)
+- Rate limiter enforcement
+- Session CRUD operations
+
+**Edge cases handled:**
+
+| Scenario | Handling |
+|---|---|
+| Empty/null income | `_evaluate_op` treats None as False for comparison ops; confidence falls back to base score |
+| Zero income | Evaluated correctly by `gt`/`lt` ops; eligibility rules use strict comparison |
+| Multi-language special characters | UTF-8 throughout; Noto Sans fonts render all scripts; ChromaDB stores Unicode embeddings |
+| Very long conversations | Session summarization triggers after 8 turns; summary replaces raw history |
+| Empty profile fields | `in_optional` operator accepts None/empty as valid; rules with `only_if` skip gracefully |
+| Concurrent requests | Rate limiter enforces per-client window; async handler prevents blocking |
+| Missing API key | Config validation on startup logs error and returns 503 |
+| Invalid scheme JSON | `load_scheme` raises descriptive error; server logs file path and parsing issue |
+
+---
+
+### Performance Metrics
+
+| Metric | Measurement |
+|---|---|
+| RAG retrieval (ChromaDB) | ~200ms per query |
+| Embedding (first load) | ~2s (singleton, cached) |
+| LLM response (OpenRouter) | ~2-5s depending on context length |
+| Full chat round-trip | ~2.5-6s (RAG + LLM) |
+| Scheme data load (5 files) | ~50ms (LRU cached) |
+| Session save | ~5ms (JSON append) |
+| Frontend initial load | ~1.2s (unoptimized) |
+| Rate limit window | 30 requests / 60s per client |
+
+**Known limitations:**
+- OpenRouter free tier has daily token limits (~200k tokens/day)
+- Embedding model requires ~2GB RAM for first load
+- No authentication — anonymous sessions only
+- ChromaDB is in-memory (no persistence across restarts without re-indexing)
+
+---
+
 ### Project Structure
 
 ```
@@ -217,6 +296,17 @@ submissions/track_1_community_benefits_navigator/shinde_vinayak_rao_patil/
 - **v2.4 Follow-up Suggestions + Self-Rated Confidence:** 1 day
 - **v2.5 AI Explain Eligibility + AI Compare Schemes:** 1 day
 - **Documentation & Demo:** 2 days
+
+---
+
+### Acknowledgments
+
+- **NVIDIA** — Nemotron-3-Super model and developer resources
+- **HydPy Community** — Organizing the meetup and contest
+- **IIIT Hyderabad** — Hosting the workshop
+- **Akash P. (NVIDIA) & Bhushan Kapkar (HydPy)** — Workshop sessions and guidance
+- **OpenRouter** — Free tier API access for Nemotron-3-Super
+- **Hugging Face** — `intfloat/multilingual-e5-small` embedding model
 
 ---
 
