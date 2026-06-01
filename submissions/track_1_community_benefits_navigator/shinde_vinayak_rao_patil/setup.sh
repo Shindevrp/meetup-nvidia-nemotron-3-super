@@ -27,10 +27,24 @@ pip install --quiet -r backend/requirements.txt
 if [ ! -f "backend/.env" ]; then
     echo "[3/4] Creating backend/.env from template..."
     cp backend/.env.example backend/.env
+
+    # Generate a random ADMIN_KEY
+    if command -v openssl &> /dev/null; then
+        ADMIN_KEY=$(openssl rand -hex 16)
+    else
+        ADMIN_KEY="adm_$(date +%s)_$(head -c 8 /dev/urandom | xxd -p)"
+    fi
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s/ADMIN_KEY=change-me-to-a-secret-key/ADMIN_KEY=$ADMIN_KEY/" backend/.env
+    else
+        sed -i "s/ADMIN_KEY=change-me-to-a-secret-key/ADMIN_KEY=$ADMIN_KEY/" backend/.env
+    fi
+
     echo ""
     echo "  ⚠️  Open backend/.env and add your OpenRouter API key:"
     echo "      API_KEY=sk-or-v1-..."
     echo "     Get a free key at https://openrouter.ai/keys"
+    echo "  ✓  ADMIN_KEY auto-generated"
     echo ""
 else
     echo "[3/4] backend/.env already exists."

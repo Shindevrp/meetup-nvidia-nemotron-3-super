@@ -68,6 +68,12 @@ def chunk_scheme_data(schemes_dir: str) -> Tuple[List[str], List[dict], List[str
             metadatas.append({"scheme_id": scheme_id, "type": "process_how_to_apply", "name": data["name"]})
             ids.append(f"{scheme_id}_how_to_apply_0")
 
+        for extra_key in ("if_not_included", "what_to_do_if_rejected", "steps"):
+            for j, item in enumerate(ap.get(extra_key, [])):
+                chunks.append(item)
+                metadatas.append({"scheme_id": scheme_id, "type": f"process_{extra_key}", "name": data["name"]})
+                ids.append(f"{scheme_id}_{extra_key}_{j}")
+
         for faq in data.get("faq", []):
             chunks.append(f"Q: {faq['q']} A: {faq['a']}")
             metadatas.append({"scheme_id": scheme_id, "type": "faq", "name": data["name"]})
