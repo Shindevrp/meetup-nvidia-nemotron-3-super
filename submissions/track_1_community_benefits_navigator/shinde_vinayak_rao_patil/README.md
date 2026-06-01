@@ -7,8 +7,8 @@
 ---
 
 ### Project Links
-- **YouTube Demo:** *[Link to be added after recording]*
-- **Blog Post:** *[Link to be added after publishing]*
+- **YouTube Demo:** https://drive.google.com/file/d/1EOJBqOfedNXyRIfe9ixPwdkRdaK6oaiQ/view?usp=drive_link
+- **Blog Post:** https://medium.com/@shindevinayakraopatil/nemotron-3-super-as-a-multi-tool-how-one-120b-moe-model-handles-rag-query-decomposition-cec551935346
 - **LinkedIn Post:** *[Link to be added after posting]*
 
 ---
