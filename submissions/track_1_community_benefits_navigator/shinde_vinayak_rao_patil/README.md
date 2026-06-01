@@ -6,6 +6,16 @@
 
 ---
 
+### Abstract
+
+**Problem:** Over 40% of Indian citizens struggle to navigate government welfare schemes due to language barriers, complex eligibility rules, and fragmented information across departments.
+
+**Who benefits:** Farmers (PM-KISAN income support), students (NSP scholarships), women (PM Ujjwala LPG connections), and low-income families (Ayushman Bharat health insurance, PM Awas housing).
+
+**Why Nemotron-3-Super:** The 120B MoE architecture delivers strong multi-step reasoning with only 12B active parameters per token, enabling complex query decomposition and session summarization entirely within the OpenRouter free tier. Its multilingual capabilities power grounded responses across 6 Indian languages without separate translation pipelines.
+
+---
+
 ### Project Links
 - **YouTube Demo:** https://drive.google.com/file/d/1EOJBqOfedNXyRIfe9ixPwdkRdaK6oaiQ/view?usp=drive_link
 - **Blog Post:** https://medium.com/@shindevinayakraopatil/nemotron-3-super-as-a-multi-tool-how-one-120b-moe-model-handles-rag-query-decomposition-cec551935346
@@ -85,6 +95,17 @@ The Community Benefits Navigator helps Indian citizens discover, understand, and
 
 ---
 
+### Unique Value Propositions
+
+| # | Differentiator | What It Means |
+|---|---|---|
+| 1 | **Query Decomposition** | Unlike standard RAG that retrieves once per question, this system uses the LLM to split broad questions (e.g., "what schemes am I eligible for?") into per-scheme sub-queries, retrieves context for each, then merges and deduplicates results — covering all relevant schemes in one response. |
+| 2 | **Multi-Role LLM** | A single Nemotron-3-Super handles **6 distinct roles** — grounded answerer, eligibility explainer, scheme comparer, recommendation engine, session summarizer, and FAQ responder — all through prompt engineering and structured JSON output, no fine-tuning needed. |
+| 3 | **Self-Rated Confidence** | Every LLM response includes an embedded confidence score extracted via regex (no extra API call) and displayed as a color-coded indicator — giving users transparency into how certain the model is about its answer. |
+| 4 | **Data-Driven Rule Engine** | Eligibility rules live in scheme JSON files, not hardcoded if/elif chains. Adding a new scheme = dropping in a JSON file. The generic rule engine evaluates age, income, location, gender, and social category automatically. |
+
+---
+
 ### Tech Stack
 
 | Layer | Technology |
@@ -101,37 +122,40 @@ The Community Benefits Navigator helps Indian citizens discover, understand, and
 
 ---
 
-### How to Run
+### Quick Start
 
 **Prerequisites:**
 - Python 3.10+
-- OpenRouter API key (free tier) — get one at [openrouter.ai/keys](https://openrouter.ai/keys)
-- 4GB+ RAM for ChromaDB + Sentence Transformers
+- OpenRouter API key (free) — [get one here](https://openrouter.ai/keys)
+- 4GB+ RAM
 
-**Quick Setup:**
+**Run in 3 commands:**
 ```bash
+git clone https://github.com/Shindevrp/meetup-nvidia-nemotron-3-super
+cd submissions/track_1_community_benefits_navigator/shinde_vinayak_rao_patil
 ./setup.sh
 ```
-This creates a virtual environment, installs dependencies, and configures your .env file.
 
-**Run the Server:**
+**Start the server:**
 ```bash
 ./run.sh
 ```
 
-**Or Manual Setup:**
+**Open:** [http://localhost:8000](http://localhost:8000)
+
+You should see a 5-tab SPA with Chat (history sidebar), Eligibility Checker, Scheme Browser, Compare tool, and CSC Locator map.
+
+> **Demo:** [YouTube Walkthrough](https://drive.google.com/file/d/1EOJBqOfedNXyRIfe9ixPwdkRdaK6oaiQ/view?usp=drive_link)
+
+**Manual Setup:**
 ```bash
-cd submissions/track_1_community_benefits_navigator/shinde_vinayak_rao_patil
 python -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
 cp backend/.env.example backend/.env
-# Edit backend/.env and add your OpenRouter API key
-cd backend
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+# Edit backend/.env → add your OpenRouter API key
+cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
-
-**Open:** `http://localhost:8000` in your browser.
 
 ---
 
