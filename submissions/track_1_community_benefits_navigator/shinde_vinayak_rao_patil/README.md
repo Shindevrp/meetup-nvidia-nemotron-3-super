@@ -46,7 +46,7 @@ These characteristics made Nemotron-3-Super the only model that could deliver al
 ---
 
 ### Project Links
-- **YouTube Demo:** https://drive.google.com/file/d/1EOJBqOfedNXyRIfe9ixPwdkRdaK6oaiQ/view?usp=drive_link
+- **YouTube Demo:** https://drive.google.com/file/d/1kpmk6U20vfdR5EKMAGiwDay9ZkIlsW1L/view?usp=sharing
 - **Blog Post:** https://medium.com/@shindevinayakraopatil/nemotron-3-super-as-a-multi-tool-how-one-120b-moe-model-handles-rag-query-decomposition-cec551935346
 - **LinkedIn Post:** https://www.linkedin.com/posts/shindeaidevloper_hydpy-nvidia-hydpy-ugcPost-7467295550594371584-tQHq/
 
@@ -186,7 +186,7 @@ http://localhost:8000
 **What you should see:**
 A 5-tab single-page app with Chat (left), sidebar toggle (top-left), language selector (top-right). Start by typing "what schemes am I eligible for?" or select the Eligibility tab to fill your profile.
 
-**Demo video:** [YouTube Walkthrough](https://drive.google.com/file/d/1EOJBqOfedNXyRIfe9ixPwdkRdaK6oaiQ/view?usp=drive_link)
+**Demo video:** [YouTube Walkthrough](https://drive.google.com/file/d/1kpmk6U20vfdR5EKMAGiwDay9ZkIlsW1L/view?usp=sharing)
 
 **First-run notes:**
 - ChromaDB indexes schemes on first startup (~10 seconds, one-time)
